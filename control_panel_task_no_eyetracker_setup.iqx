@@ -1,0 +1,68 @@
+﻿
+**************************************************************************************************************
+When eye-tracker is not needed to be ON this set of code is run instead to be able top call some 
+texts instead of eye-tracker ports so that the main task code is able to switch between collecting 
+data with and without the eye-tracker connected tio the behavioural task display computer.
+**************************************************************************************************************
+<text portETexptBegin>
+/ items = ("0")
+/ position = (10%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text portETtrialID>
+/ items = ("0")
+/ position = (10%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text portETdisplayOn>
+/ items = ("0")
+/ position = (20%, 8%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text portETbuttonPressLeft>
+/ items = ("401")
+/ position = (50%, 2%)
+/ fontstyle = ("Arial", 5%)
+/ txcolor = black // white
+</text>
+
+<text portETbuttonPressRight>
+/ items = ("402")
+/ position = (50%, 2%)
+/ fontstyle = ("Arial", 5%)
+/ txcolor = black // white
+</text>
+
+<text portETdisplayOff>
+/ items = ("0")
+/ position = (30%, 8%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text portETtrialEnd>
+/ items = ("60")
+/ position = (20%, 4%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text portETexptEnd>
+/ items = ("70")
+/ position = (30%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<expressions>
+/ setport2 = text.portETexptBegin.setitem(values.markerETexpBegin, 1);
+/ setport3 = text.portETtrialID.setitem(values.markerETtrialID, 1);
+/ setport4 = text.portETdisplayOn.setitem(values.markerETDisplayOn, 1);
+/ setport5 = text.portETdisplayOff.setitem(values.markerETdisplayOff, 1);
+</expressions>

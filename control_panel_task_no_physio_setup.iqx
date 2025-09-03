@@ -1,0 +1,86 @@
+﻿**************************************************************************************************************
+This runs when we don't want physio data to be collected but need a switch in the main code 
+**************************************************************************************************************
+<text instruPhaseBeginPhysio>
+/ items = ("beginExpt")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text rewardAdisplayedPhysio>
+/ items = ("rewardA")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text rewardBdisplayedPhysio>
+/ items = ("rewardB")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text instruQuizFeedbackPhysio>
+/ items = ("instruQuizFeedback")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text pavPhaseBeginPhysio>
+/ items = ("beginExpt")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text pavMachinePhysio>
+/ items = ("pavMachine")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text pavSnackPhysio>
+/ items = ("pavSnack")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text pavQuizPhysio>
+/ items = ("pavQuiz")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text pavQuizFeedbackPhysio>
+/ items = ("pavQuizFeedback")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text PITphaseBeginPhysio>
+/ items = ("beginExpt")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text PITMachPhysio>
+/ items = ("pitMachine")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>
+
+<text experimentEndPhysio>
+/ items = ("endExpt")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor = black // white
+</text>

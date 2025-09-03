@@ -1,0 +1,55 @@
+﻿**************************************************************************************************************
+Eye-tracking software interaction for Defend the Kingdom task
+**************************************************************************************************************
+<eyetracker>
+/ plugin = "srresearch"
+/ calibrationmode = "HV9"
+/ framerate = 1000
+</eyetracker>
+
+<port portETexptBegin>
+/ port = eyetracker
+/ items = (1)
+</port>
+
+<port portETtrialID>
+/ port = eyetracker
+/ items = (1)
+</port>
+
+<port portETdisplayOn>
+/ port = eyetracker
+/ items = (1)
+</port>
+
+<port portETbuttonPressLeft>
+/ port = eyetracker
+/ items = (401)
+</port>
+
+<port portETbuttonPressRight>
+/ port = eyetracker
+/ items = (402)
+</port>
+
+<port portETdisplayOff>
+/ port = eyetracker
+/ items = (1)
+</port>
+
+<port portETtrialEnd>
+/ port = eyetracker
+/ items = (60)
+</port>
+
+<port portETexptEnd>
+/ port = eyetracker
+/ items = (70)
+</port>
+
+<expressions>
+/ setport2 = port.portETexptBegin.setitem(values.markerETexpBegin, 1);
+/ setport3 = port.portETtrialID.setitem(values.markerETtrialID, 1);
+/ setport4 = port.portETdisplayOn.setitem(values.markerETDisplayOn, 1);
+/ setport5 = port.portETdisplayOff.setitem(values.markerETdisplayOff, 1);
+</expressions>

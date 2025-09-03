@@ -1,0 +1,953 @@
+﻿<usermanual>
+</usermanual>
+
+**************************************************************************************************************
+Initializing the parameters 
+**************************************************************************************************************
+// Parameters to be fixed before the experiment
+<parameters>
+/ lastScriptUpdated = "08/31/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
+/ includePhysio = 1					// Set this to 1 if physio data needs to be recorded
+/ includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
+									// Also make sure for eye-tracking the <include> function is uncommented
+/ stimuliSize = 45% // 50%
+/ pavStimuliDisplayDuration = 4000
+/ pavFeedbackDisplayDuration = 1200
+/ umbrellaMovementDuration = 1000
+/ instruITImin = 500
+/ instruITImax = 1500
+/ instruResponseMaxTime = 2000
+/ instruFeedbackDur = 1000
+/ pavITImin = 2000 // 1200 // 3000
+/ pavITImax = 3000 // 1800 // 6000	
+/ pitStimuliDisplayDuration = 3000
+/ pitFeedbackDisplayDuration = 1500 // Reduced this duration from 2300 to reduce overall task length. This indicated that the pit feedback will be displayed for 1200 ms
+/ pitITImin = 2000 // 300
+/ pitITImax = 3000 // 600
+/ pitTotalTrials = 60 // Reduced the number of trials from 70 to reduce the overall trial duration
+// NOTE: if pitTotalTrials is changed here, make sure to change it in <block pitPhase> where the trials are mentioned
+
+/ leftButtonBox = 48				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
+/ rightButtonBox = 33				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
+/ spaceButtonBox = 32 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
+</parameters>
+
+
+**************************************************************************************************************
+Defining the sequence of blocks for the experiment
+**************************************************************************************************************
+<expt>
+/ blocks = [
+	1 = experimentSetup;			// Setup experimental components
+	2 = introInstructions;			// Task introductory instructions
+	3 = instPhaseInstructions;		// Instrumental phase instructions	
+	4 = instBlock;					// Instrumental block - branches multiple times till the participant answers quiz correctly two times in a row
+]
+</expt>
+5 = pavPhaseInstructions;       // Pavlovian phase instructions
+	4-11 = pavPhase;			    // Pavlovian phase
+	12 = pitPhaseInstructions;  	// Instrumental phase instructions
+	13-16 = pitPhase;				// PIT block
+	17 = finalInstructions;			// Final instructions
+	
+**************************************************************************************************************
+Physio and eye-tracker software interaction - 
+make sure eye-tracker 'include' is uncommented before recording eye-tracker data
+**************************************************************************************************************
+<include>
+/ file = "control_panel_task_physio_setup.iqx" 
+/ precondition = [parameters.includePhysio == 1]
+</include>
+
+<include>
+/ file = "control_panel_task_no_physio_setup.iqx"
+/ precondition = [parameters.includePhysio == 0]
+</include>
+
+<include>
+/ file = "control_panel_task_eyetracker_setup.iqx" 
+/ precondition = [parameters.includeEyetracker == 1]
+</include>
+
+<include>
+/ file = "control_panel_task_no_eyetracker_setup.iqx" 
+/ precondition = [parameters.includeEyetracker == 0]
+</include>
+
+**************************************************************************************************************
+Values which will be updated during the trials
+**************************************************************************************************************	
+<values>
+/ groupIDinput = script.groupid
+/ introTextYPos = 50%;
+/ instruQuizTrialNum = 0;
+/ isBlockCorrectQuizzes = 0;
+/ numBlockQuizzesPassedTotal = 0;
+/ numBlockQuizzesPassedInARow = 0;
+/ soundCalibrationTextIndex = 0;
+/ soundCalibrationTextIndex2 = 0;
+/ trialStartTime = 0;
+/ trialEndTime = 0;
+/ instructionIndex = 0;
+/ phaseName = "";
+/ pavInstructionIndex = 0;
+/ pavSetupTrialsCounter = 0;
+/ instruTrialNum = 0;
+/ markerETtrialID = 0;
+/ markerETDisplayOn = 0;
+/ markerETdisplayOff = 0;
+/ speakerOnTestNum = 0;
+/ chooseAversiveOutcome = 0;
+/ trialDur = 0;
+/ instRightAversiveOutcome = 0;
+/ instLeftAversiveOutcome = 0;
+/ pavOnlyOutcome = 0;
+/ richInstOption = 0;
+/ poorInstOption = 0;
+/ numSoundRepeated = 0;
+</values>
+
+**************************************************************************************************************
+Output data file columns
+**************************************************************************************************************
+// trialStartTime (timestamp) can give the time till the start of the trial while script.elapsedtime will record the time at the end of that trial both with reference to the start of the script 							
+<data>
+/ audit = true
+/ columns = (
+// General information
+build, parameters.lastScriptUpdated, values.experimentName, subject, values.groupIDinput, values.groupIDnumeric, session, script.startdate, script.starttime, 					
+// Experiment parameters			
+)
+</data>
+
+**************************************************************************************************************
+Defining background 
+**************************************************************************************************************
+<defaults>
+/ fontstyle = ("Arial", 3.5%, false, false, false, false, 5, 1)
+/ screencolor = (26, 26, 26)   // 10% dark gray
+/ txbgcolor = (26, 26, 26)     // 10% dark gray
+/ txcolor = white			   // text color is white
+/ minimumversion = "6.1.0.0"
+/ canvassize = (100%, 100%)
+/ canvasaspectratio = (4, 3) 
+// inputdevice = XID
+/ inputdevice = keyboard
+</defaults>
+
+**************************************************************************************************************
+Creating stimuli 
+**************************************************************************************************************
+<picture socialStimuli>
+/ items = ("stimuli/social/human_image_1_w_controlpanel.png", "stimuli/social/human_image_2_w_controlpanel.png",
+"stimuli/social/human_image_3_w_controlpanel.png")
+/ position = (values.socialXPos, values.socialYPos)
+/ size = (parameters.stimuliSize, parameters.stimuliSize)
+/ select = values.chooseSocialStimuli
+/ erase = false
+</picture>
+
+<picture aversiveOutcomeStimuli>
+/ items = ("stimuli/inst_aversive/inst_aversive_image_1_w_controlpanel.png", "stimuli/inst_aversive/inst_aversive_image_2_w_controlpanel.png",
+"stimuli/inst_aversive/inst_aversive_image_3_w_controlpanel.png")
+/ position = (values.socialXPos, values.socialYPos)
+/ size = (parameters.stimuliSize, parameters.stimuliSize)
+/ select = values.chooseAversiveOutcome
+/ erase = false
+</picture>
+
+<list chooseInstOutcome>
+/ items = (1, 2, 3)
+/ selectionmode = random
+/ replace = false
+</list>
+
+
+<picture fractalStimuli>
+/ items = ("stimuli/fractals/fractal_image_1_w_controlpanel.png", "stimuli/fractals/fractal_image_2_w_controlpanel.png",
+"stimuli/fractals/fractal_image_3_w_controlpanel.png")
+/ position = (values.socialXPos, values.socialYPos)
+/ size = (parameters.stimuliSize, parameters.stimuliSize)
+/ select = values.chooseFractalStimuli
+/ erase = false
+</picture>
+
+<picture alarmTurnedOff>
+/ items = ("stimuli/alarm_tuned_off.png")
+/ position = (50%, 50%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture controlPanel>
+/ items = ("stimuli/control_panel.png")
+/ position = (50%, 50%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture leverLeft>
+/ items = ("stimuli/lever_left.png")
+/ position = (50%, 50%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture leverLeftDown>
+/ items = ("stimuli/lever_left_down.png")
+/ position = (50%, 50%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture leverRight>
+/ items = ("stimuli/lever_right.png")
+/ position = (50%, 50%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture leverRightDown>
+/ items = ("stimuli/lever_right_down.png")
+/ position = (50%, 50%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture playButton>
+/ items = ("stimuli/misc/play-button.png")
+/ position = (50%, 74%)
+/ size = (21%, 21%)
+/ erase = false
+</picture>
+
+<picture nextButton>
+/ items = ("stimuli/misc/next-button.png")
+/ position = (83%, 78%)
+/ size = (15%, 15%)
+</picture>
+
+<picture yLetter>
+/ items = ("stimuli/misc/Y-letter.png")
+/ position = (20%, 70%)
+/ size = (15%, 15%)
+</picture>
+
+<picture nLetter>
+/ items = ("stimuli/misc/N-letter.png")
+/ position = (80%, 70%)
+/ size = (15%, 15%)
+</picture>
+
+<sound testSound>
+/ items = ("stimuli/sound/test_sound.wav")
+/ pan = 0
+</sound>
+
+<picture fixation> 
+/ items =("stimuli/misc/fixation.png")
+/ position = (50%, 50%)
+/ size = (6%, 6%)
+/ erase = false
+</picture>
+
+
+
+**************************************************************************************************************
+Sound calibration procedure
+**************************************************************************************************************
+<item soundCalibrationText>
+/ 1 = "We will perform a sound calibration.
+~nPlease look at the small black speaker located to the right of the keyboard.
+Please make sure that you can reach the speaker knob to change the volumn.
+~nTo hear the sound use your mouse to press the play button below."
+/ 2 = "Did you hear the sound? 
+~n~nPress 'Y' for Yes and 'N' for No using your mouse."
+/ 3 = "Please make sure the speakers are ON.
+~nTry increasing your volumn and listening for the sound again."
+/ 4 = "This test will abort due to speaker issues.
+~n~nPlease let the experimenter know the issue.
+~n~n~n~n~n~n~nThis script will abort in 10s."
+/ 5 = "Decrease or Increase your speaker volumn based on the prompts shown on the next screen.
+~nClick the play button with your mouse to listen to the sound. You can listen to the sound multiple times by pressing this button.
+~nClick the next arrow sign on the lower right side of the screen when you are done."
+/ 6 = "Now that you know the range of volumn on your speaker, click the play button with your mouse to listen to the sound again.
+~nCrank up the speaker till the loudness is at a 9 out of 10 where 10 is the highest volumn that you had set previously.
+~nClick the next arrow sign when you are done."
+</item>
+
+<text soundCalibrationText>
+/ items = soundCalibrationText
+/ fontstyle = ("Arial", 3.8%, false, false, false, false, 5, 1)
+/ position = (50%, 40%)
+/ size = (85%, 47%) //35%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+/ select = values.soundCalibrationTextIndex
+</text>
+
+<trial speakerOn>
+/ ontrialbegin = [
+	values.introTextYPos = 40%;
+	values.soundCalibrationTextIndex = 1;
+	values.speakerOnTestNum = values.speakerOnTestNum + 1;
+]
+/ stimulustimes = [0 = clearscreen, soundCalibrationText, playButton]
+/ inputdevice = mouse
+/ validresponse = (playButton)
+/ timeout = 120000
+/ responsemessage = (playButton, testSound, 3000)
+/ responsemessage = (playButton, playButton, 3000)
+/ responsemessage = (playButton, soundCalibrationText, 3000)
+/ recorddata = true
+/ responseinterrupt = trial
+/ branch = [
+	trial.speakerTest;
+]
+</trial>
+
+<trial speakerTest>
+/ ontrialbegin = [
+	values.soundCalibrationTextIndex = 2;
+]
+/ stimulustimes = [0 = clearscreen, soundCalibrationText, yLetter, nLetter]
+// correctresponse = (parameters.yesButtonBox, parameters.noButtonBox)
+/ inputdevice = mouse
+/ validresponse = (yLetter, nLetter)
+/ responsetrial = (nLetter, repeatSoundTest_inbetweenTrial)
+/ recorddata = true
+// branch = [
+//	if (trial.speakerTest.response == parameters.noButtonBox){
+//		if (values.numSoundRepeated == 2){
+//			trial.speakerNotWorking;
+//		} else {
+//			trial.repeatSoundTest;
+//		}
+//	}
+//]
+</trial>
+
+<trial repeatSoundTest_inbetweenTrial>
+/ stimulustimes = [0 = clearscreen]
+/ trialduration = 1
+/ recorddata = false
+/ branch = [
+	if (values.numSoundRepeated == 2){
+		trial.speakerNotWorking;
+	} else {
+		trial.repeatSoundTest;
+	}
+]
+</trial>
+
+<trial repeatSoundTest>
+/ ontrialbegin = [
+	values.numSoundRepeated = values.numSoundRepeated + 1;
+	values.soundCalibrationTextIndex = 3;
+]
+/ stimulustimes = [0 = clearscreen, soundCalibrationText, spaceBarContinueInstructions]
+/ correctresponse = (parameters.spaceButtonBox)
+/ recorddata = true
+/ branch = [
+	trial.speakerOn;
+]
+</trial>
+
+<trial speakerNotWorking>
+/ ontrialbegin = [
+	values.soundCalibrationTextIndex = 4;
+]
+/ stimulustimes = [0 = soundCalibrationText]
+/ validresponse = (noresponse)
+/ correctresponse = (noresponse)
+/ recorddata = true
+/ trialduration = 10000
+/ ontrialend = [
+	script.abort();
+]
+</trial>
+
+<item soundCalibrationText2>
+/ 1 = "Increase the volumn to a level which makes you very irritated and makes you want to stop the experiment right away.
+~nYou can listen to the sound multiple times by pressing the play button with your mouse.
+~nClick the next arrow sign when you are done."
+/ 2 = "Decrease the volumn to a level where you can barely hear the sound.
+~nClick the next arrow sign when you are done."
+/ 3 = "Set the volumn to a level which feel comfortable, not too loud nor too low.
+~nClick the next arrow sign when you are done."
+</item>
+
+<text soundCalibrationText2>
+/ items = soundCalibrationText2
+/ fontstyle = ("Arial", 3.8%, false, false, false, false, 5, 1)
+/ position = (50%, 37%)
+/ size = (85%, 30%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+/ select = values.soundCalibrationTextIndex2
+/ erase = false
+</text>
+
+<text spaceBarContinueInstructions>
+/ items = ("Press the center button on the box to continue.")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 90%)
+/ size = (80%, 5%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+</text>
+
+<trial soundCalibrationFirst>
+/ ontrialbegin = [
+	values.soundCalibrationTextIndex = 5;
+]
+/ stimulustimes = [0 = soundCalibrationText, spaceBarContinueInstructions]
+/ validresponse = (parameters.spaceButtonBox)
+/ correctresponse = (parameters.spaceButtonBox)
+/ recorddata = true
+</trial>
+
+<trial soundCalibration>
+/ ontrialbegin = [
+	values.soundCalibrationTextIndex2 = values.soundCalibrationTextIndex2 + 1;
+	values.soundCalibrationTextYPos = values.soundCalibrationTextYPos + 30%;
+]
+/ stimulustimes = [0 = soundCalibrationText2, playButton, nextButton]
+/ inputdevice = mouse
+/ validresponse = (playButton, nextButton)
+/ responsemessage = (playButton, soundCalibrationText2, 3000)
+/ responsemessage = (playButton, playButton, 3000)
+/ responsemessage = (playButton, testSound, 3000)
+/ recorddata = true
+/ branch = [
+	if (trial.soundCalibration.response == "playButton"){
+		return trial.soundCalibrationContinued;
+	}
+]
+</trial>
+
+<trial soundCalibrationContinued>
+/ stimulustimes = [0 = soundCalibrationText2, playButton, nextButton]
+/ inputdevice = mouse
+/ validresponse = (playButton, nextButton)
+/ responsemessage = (playButton, soundCalibrationText2, 3000)
+/ responsemessage = (playButton, playButton, 3000)
+/ responsemessage = (playButton, testSound, 3000)
+/ recorddata = true
+/ branch = [
+	if (trial.soundCalibrationContinued.response == "playButton")
+	trial.soundCalibrationContinued;
+]
+</trial>
+
+<trial setSpeakerVolumn>
+/ ontrialbegin = [
+	values.soundCalibrationTextIndex = 6;
+]
+/ stimulustimes = [0 = soundCalibrationText, playButton, nextButton]
+/ inputdevice = mouse
+/ validresponse = (playButton, nextButton)
+/ responsemessage = (playButton, soundCalibrationText, 3000)
+/ responsemessage = (playButton, playButton, 3000)
+/ responsemessage = (playButton, testSound, 3000)
+/ recorddata = true
+/ branch = [
+	if (trial.setSpeakerVolumn.response == "playButton"){
+		return trial.setSpeakerVolumnContinued;
+	}
+]
+</trial>
+
+<trial setSpeakerVolumnContinued>
+/ stimulustimes = [0 = soundCalibrationText, playButton, nextButton]
+/ inputdevice = mouse
+/ validresponse = (playButton, nextButton)
+/ responsemessage = (playButton, soundCalibrationText, 3000)
+/ responsemessage = (playButton, playButton, 3000)
+/ responsemessage = (playButton, testSound, 3000)
+/ recorddata = true
+/ branch = [
+	if (trial.setSpeakerVolumnContinued.response == "playButton")
+	trial.setSpeakerVolumnContinued;
+]
+</trial>
+
+<text soundCalibrationFinish>
+/ items = ("Sound calibration completed. 
+~n~nWe will now start the game.")
+/ fontstyle = ("Arial", 3.8%, false, false, false, false, 5, 1)
+/ position = (50%, 37%)
+/ size = (85%, 30%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+</text>
+
+<trial soundCalibrationFinish>
+/ stimulustimes = [0 = clearscreen, soundCalibrationFinish, spaceBarContinueInstructions]
+/ validresponse = (parameters.spaceButtonBox)
+/ correctresponse = (parameters.spaceButtonBox)
+/ recorddata = true
+</trial>
+
+<block experimentSetup>
+/ ontrialbegin = [
+	values.soundCalibrationTextYPos = 20%;
+]
+/ trials = [
+	1 = speakerOn;
+	2 = soundCalibrationFirst;
+	3-5 = soundCalibration;
+	6 = setSpeakerVolumn;
+	7 = soundCalibrationFinish;
+]
+/ datastreams = (eyetracker)
+/ recorddata = true
+</block>
+
+
+
+**************************************************************************************************************
+Instructions for explanation of experiment
+**************************************************************************************************************
+<item introInstructions>
+/ 1 = "Welcome to the Alarm Control Simulation!
+~n~n~nYou are a technician responsible for monitoring and managing a highly sensitive alarm system in a secure facility."
+/ 2 = "Your job is to minimize system malfunctions by responding to visual signals and colleague alerts that may indicate the potential activation of disruptive alarms (e.g., loud noises and visual alerts). 
+~n~nStay focused!"
+</item>
+
+<text introInstructions>
+/ items = introInstructions
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, values.introTextYPos)
+/ size = (80%, 80%) // (values.introTextSize, 80%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+/ select = values.instructionIndex
+</text>
+
+<trial introInstructions>
+/ ontrialbegin = [
+	values.trialStartTime = script.elapsedtime;
+	values.instructionIndex = values.instructionIndex + 1;
+	if (values.instructionIndex == 3){
+		values.introTextYPos = 25%;
+		trial.introInstructions.insertstimulustime(picture.thunderFeedback, 0);
+		trial.introInstructions.insertstimulustime(sound.thunderSound, 0);
+	} else if (values.instructionIndex == 4) {
+		values.introTextYPos = 25%;
+		trial.introInstructions.insertstimulustime(picture.partlySunnyFeedback, 0);
+	}
+]
+/ stimulustimes = [0 = introInstructions, spaceBarContinueInstructions]
+/ beginresponsetime = 200 // 1000
+/ correctresponse = (parameters.spaceButtonBox) 
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+	trial.introInstructions.resetstimulusframes();
+]
+</trial>
+
+<block introInstructions>
+/ onblockbegin = [
+	values.instructionIndex = 0;
+	values.thunderFeedbackYPos = 57%;
+	values.sunnyFeedbackYPos = 52%;
+	values.introTextYPos = 45%;
+]
+/ trials = [
+	1-2 = introInstructions;
+]
+/ datastreams = (eyetracker)
+/ recorddata = true
+</block>
+
+
+
+**************************************************************************************************************
+Instrumental phase instructions
+**************************************************************************************************************
+<item instInstructions>
+/ 1 = "In this phase, your role is to interact with the control panel to prevent system alarms from being triggered."
+/ 2 = "On each trial, a control panel will appear on the top of the screen with two levers on the bottom. There are two types of system alerts that will be activated if you are unable to stop it from activating. Each lever is associated with avoiding one type of system alert. You must choose between the left and right levers by pressing the “L” or “R” button on the button box, respectively."
+/ 3 = "Make your selection as quickly as possible to ensure smooth system operations. If you fail to respond in time, a high-priority alarm will go off.
+~n~nYour choices influence whether an alarm goes off. Some levers are more effective than others at preventing system alerts."
+/ 4 = "After each choice, you’ll see whether the alarm was successfully avoided (“Alarm turned off”) or triggered (a warning image and loud noise). Pay attention and try to learn which lever is more effective at preventing which alarms." 
+/ 5 = "If you stop choosing a lever for several trials, its chance of successfully preventing an alarm may improve—so consider varying your responses strategically."
+/ 6 = "After each block of trials, you will answer a few questions to test your understanding of how the system works. You’ll continue playing blocks until you've demonstrated you understand the pattern of outcomes."
+</item>
+
+<text instInstructions>
+/ items = instInstructions
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 50%)
+/ size = (80%, 80%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+/ select = values.instInstructionIndex
+</text>
+
+<trial instInstructionsFirst>
+/ ontrialbegin = [
+	values.trialStartTime = script.elapsedtime;
+	values.instInstructionIndex = values.instInstructionIndex + 1;
+]
+/ beginresponsetime = 200
+/ stimulustimes = [0 = clearscreen, instInstructions, spaceBarContinueInstructions, instPhaseBeginPhysio]
+/ correctresponse = (parameters.spaceButtonBox) 
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+]
+</trial>
+
+<trial instInstructions>
+/ ontrialbegin = [
+	values.trialStartTime = script.elapsedtime;
+	values.pavInstructionIndex = values.pavInstructionIndex + 1;
+]
+/ beginresponsetime = 200
+/ stimulustimes = [0 = clearscreen, instInstructions, spaceBarContinueInstructions]
+/ correctresponse = (parameters.spaceButtonBox) 
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+]
+</trial>
+
+<block instPhaseInstructions>
+/ onblockbegin = [
+	values.phaseName = "instruInstructions";
+	values.pavInstructionIndex = 0;
+	values.pavSetupTrialsCounter = 0;
+]
+/ trials = [
+	1 = instInstructionsFirst;
+	2-6 = instInstructions;
+	7 = sendInstruBeginPhysio;
+]
+/ datastreams = (eyetracker)
+/ recorddata = true
+</block>
+
+**************************************************************************************************************
+Instrumental phase 
+**************************************************************************************************************
+<list buttonOptions>
+/ items = ("l", "r")
+/ selectionmode = random
+/ replace = false
+</list>
+
+<trial sendInstruBeginPhysio> // sent at the end of instrumental instructions
+/ ontrialbegin = [
+	values.instRightAversiveOutcome = list.chooseInstOutcome.nextvalue;
+	values.instLeftAversiveOutcome = list.chooseInstOutcome.nextvalue;
+	values.pavOnlyOutcome = list.chooseInstOutcome.nextvalue;
+	values.richInstOption = list.buttonOptions.nextvalue;
+	values.poorInstOption = list.buttonOptions.nextvalue;
+	values.numBlockQuizzesPassedTotal = 0;
+	values.numBlockQuizzesPassedInARow = 0;
+]
+/ stimulustimes = [0 = instruPhaseBeginPhysio; 998 = clearscreen]
+/ trialduration = 1000
+/ response = noresponse
+/ recorddata = false
+/ screencapture = false
+</trial>
+
+<trial sendInstruBlockBeginPhysio> // sent at the begining of every instrumental block
+/ ontrialbegin = [
+	values.instruBlockNum = values.instruBlockNum + 1;
+	values.instruTrialNum = 0;
+	values.instruQuizTrialNum = 0;
+	values.thisBlockCorrectQuizzes = 0; // should be 2 for the participant to pass that block's quiz
+]
+/ stimulustimes = [0 = instruBlockBeginPhysio; 998 = clearscreen]
+/ trialduration = 1000
+/ response = noresponse
+/ recorddata = false
+/ screencapture = false
+</trial>
+
+
+<expressions>
+/ instruITIdur =  rand(parameters.instruITImin, parameters.instruITImax)
+</expressions>
+
+<trial instruITI_start>
+/ ontrialbegin = [
+	values.instruTrialNum += 1;
+	values.trialStartTime = trial.instruITI_start.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruPhaseTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 101);
+	values.markerETDisplayOn = 3010;
+	values.markerETdisplayOff = 5010;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5;  
+]
+/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn] 
+/ response = noresponse
+/ trialduration = expressions.instruITIdur -1
+/ screencapture = false
+/ recorddata = false
+/ branch = [
+	return trial.instruITI;
+]
+</trial>
+
+<trial instruITI>
+/ stimulustimes = [0 = controlPanel, portETdisplayOff; 1 = portETtrialEnd]
+/ trialduration = 2
+/ screencapture = true
+/ response = noresponse
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+]
+/ branch = [
+	return trial.instruResponse;
+]
+</trial>
+
+<trial instruResponse>
+/ ontrialbegin = [
+	values.trialStartTime = trial.instruResponse.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruPhaseTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 101);
+	values.markerETDisplayOn = 3010;
+	values.markerETdisplayOff = 5010;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5;  
+]
+/ stimulustimes = [0 = controlPanel, leverLeft, leverRight, portETtrialID; 1 = portETdisplayOn] 
+/ beginresponsetime = 0
+/ validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
+/ timeout = parameters.instruResponseMaxTime -1 
+/ screencapture = true
+/ recorddata = true
+/ responseinterrupt = immediate
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+]
+/ branch = [
+	return trial.instruFeedback;
+]
+</trial>
+
+<list probRichOption> // rich option has 70% probability of preventing the aversive outcome
+/ items = (0, -1) 
+/ itemprobabilities = (0.7, 0.3)
+/ poolsize = 50
+/ selectionmode = random
+/ replace = true
+</list>
+
+<list probPoorOption> // poor option has 30% probability of preventing the aversive outcome
+/ items = (-1, 0) 
+/ itemprobabilities = (0.7, 0.3)
+/ poolsize = 50
+/ selectionmode = random
+/ replace = true
+</list>
+
+<trial instruFeedback>
+/ ontrialbegin = [
+	values.trialStartTime = trial.instruFeedback.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruPhaseTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 101);
+	values.markerETDisplayOn = 3010;
+	values.markerETdisplayOff = 5010;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5;
+	
+	if (trial.instruResponse.response == parameters.leftButtonBox){
+		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
+		trial.instruFeedback.insertStimulustime(picture.leverRight, 0);
+		
+		// choosing if we should provide the aversive or alarm turned off outcome
+		if (values.richInstOption == "l"){ // if left button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcome = list.probRichOption.nextvalue; // 0 means alarm turned off outcome; -1 means aversive outcome
+		} else if (values.poorInstOption == "l"){ // if left button is the poor instrumental option
+			values.currentOutcome = list.probPoorOption.nextvalue;
+		}
+		if (values.currentOutcome == -1){
+			values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
+			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+		} else {
+			values.chooseAversiveOutcome = 0;
+			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
+		}
+		
+	} else if (trial.instruResponse.response == parameters.rightButtonBox){
+		trial.instruFeedback.insertStimulustime(picture.leverRightDown, 0);
+		trial.instruFeedback.insertStimulustime(picture.leverLeft, 0);
+		
+		// choosing if we should provide the aversive or alarm turned off outcome
+		if (values.richInstOption == "r"){ // if left button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcome = list.probRichOption.nextvalue; // 0 means alarm turned off outcome; -1 means aversive outcome
+		} else if (values.poorInstOption == "r"){ // if left button is the poor instrumental option
+			values.currentOutcome = list.probPoorOption.nextvalue;
+		}
+		if (values.currentOutcome == -1){
+			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
+			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+		} else {
+			values.chooseAversiveOutcome = 0;
+			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
+		}
+		
+	} else { // if no button is pressed, the participants receive a 3rd aversive noise
+		trial.instruFeedback.insertStimulusTime(picture.leverRight, 0);
+		trial.instruFeedback.insertStimulusTime(picture.leverLeft, 0);
+		trial.instruFeedback.insertStimulusTime(sound.3rdAversiveNoise, 0);
+	}
+]
+/ stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 997 = portETdisplayOff; 998 = portETtrialEnd] 
+/ response = noresponse
+/ trialduration = parameters.instruFeedbackDur -1
+/ screencapture = true
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+]
+</trial>
+
+
+<text instruQuizQuestion>
+/ items = ("Which button prevented this outcome?")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 30%)
+/ size = (80%, 5%)
+</text>
+
+<text instruQuizInstructions>
+/ items = ("Press 'L' or 'R' key")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 90%)
+</text>
+
+<list instruQuizOutcomeNum>
+/ items = (values.instRightAversiveOutcome, values.instLeftAversiveOutcome)
+/ poolsize = 2
+/ replace = false
+/ selectionmode = random
+</list>
+
+<trial instruQuiz>
+/ ontrialbegin = [
+	values.trialStartTime = trial.instruQuiz.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruPhaseTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 301);
+	values.markerETDisplayOn = 3030;
+	values.markerETdisplayOff = 5030;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5; 
+	values.chooseAversiveOutcome = list.instruQuizOutcomeNum.nextvalue;
+	values.instruQuizTrialNum = values.instruQuizTrialNum + 1;
+]
+/ stimulustimes = [0 = clearscreen, aversiveOutcomeStimuli, instruQuizQuestion, instruQuizInstructions, portETtrialID; 1 = portETdisplayOn]
+/ validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
+/ correctresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
+/ recorddata = true
+/ screencapture = true
+/ responseinterrupt = immediate
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+	
+	if (values.chooseAversiveOutcome == values.instRightAversiveOutcome){
+		if (trial.instruQuiz.response == parameters.rightButtonBox){
+			values.instruQuizResponse = "correct";
+			values.thisBlockCorrectQuizzes = values.thisBlockCorrectQuizzes + 1;
+		} else if (trial.instruQuiz.response == parameters.leftButtonBox){
+			values.instruQuizResponse = "incorrect";
+		}
+	} else if (values.chooseAversiveOutcome == values.instLeftAversiveOutcome){
+		if (trial.instruQuiz.response == parameters.leftButtonBox){
+			values.instruQuizResponse = "correct";
+			values.thisBlockCorrectQuizzes = values.thisBlockCorrectQuizzes + 1;
+		} else if (trial.instruQuiz.response == parameters.rightButtonBox){
+			values.instruQuizResponse = "incorrect";
+		}
+	}	
+]
+/ branch = [
+	return trial.instruQuizEnd;
+]
+</trial>
+
+<trial instruQuizEnd>
+/ stimulustimes = [0 = portETdisplayOff; 1 = portETtrialEnd]
+/ trialduration = 2
+/ recorddata = false
+/ screencapture = false
+/ ontrialend = [
+	if (values.instruQuizTrialNum == 2 && values.isBlockCorrectQuizzes == 2){ // Both quizzes are completed for this block and are correct
+		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
+		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow + 1;
+	} else if (values.instruQuizTrialNum == 2 && values.isBlockCorrectQuizzes < 2){ // Both quizzes are completed for this block but atleast one quiz was incorrect
+		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow - 1;
+	}
+]
+/ branch = [
+	if (values.instruQuizTrialNum < 2){
+		return trial.instruQuiz;
+	}
+]
+</trial>
+
+
+<block instBlock> // repeat blocks upto 8 times and a minimum of 2 times till the participant answers questions correctly two times in a row
+/ trials = [
+	1 = sendInstruBlockBeginPhysio;
+	2-51 = instruITI_start;
+	52 = instruQuiz;
+]
+/ screencapture = true
+/ datastreams = (eyetracker)
+/ branch = [
+	if (values.numBlockQuizzesPassedInARow < 2){
+		return block.instBlock;
+	}
+]
+</block>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

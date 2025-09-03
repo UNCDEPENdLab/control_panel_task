@@ -1,0 +1,78 @@
+﻿**************************************************************************************************************
+Physio software interaction
+**************************************************************************************************************
+<port instruPhaseBeginPhysio>
+/ port = LPT //  port = LPT works (https://www.millisecond.com/forums/Topic30378.aspx)
+/ subport = data
+/ items = ("10011110") // 158
+</port>
+
+<port rewardAdisplayedPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("01100101") // 101
+</port>
+
+<port rewardBdisplayedPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("01100111") // 103
+</port>
+
+<port instruQuizFeedbackPhysio> 
+/ port = LPT 
+/ subport = data
+/ items = ("01101101") // 109
+</port>
+
+<port pavPhaseBeginPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("10011111") // 159
+</port>
+
+<port pavMachinePhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("01101111") // 111
+</port>
+
+<port pavSnackPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("01110101") // 117
+</port>
+
+<port pavQuizPhysio> // check if this is the number sent at this point
+/ port = LPT 
+/ subport = data
+/ items = ("10010101") // new= 149 // old= ("10011111") // 159
+</port>
+
+<port pavQuizFeedbackPhysio> 
+/ port = LPT 
+/ subport = data
+/ items = ("01110111") // 119
+</port>
+
+<port PITphaseBeginPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("10100100") // 164
+</port>
+
+<port PITMachPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("00000000") // red = 126, blue = 132, greeen = 134, yellow = 140
+</port>
+
+<port experimentEndPhysio>
+/ port = LPT
+/ subport = data
+/ items = ("11010001") // new= 209 // old= ("01100100") // 100
+</port>
+
+<expressions>
+/ setport1 = port.PITMachPhysio.setitem(values.physioMarkerPITcolor, 1);
+</expressions>
