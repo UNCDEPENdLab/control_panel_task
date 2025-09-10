@@ -8,56 +8,56 @@ data with and without the eye-tracker connected tio the behavioural task display
 / items = ("0")
 / position = (10%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETtrialID>
 / items = ("0")
 / position = (10%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETdisplayOn>
 / items = ("0")
 / position = (20%, 8%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETbuttonPressLeft>
 / items = ("401")
 / position = (50%, 2%)
 / fontstyle = ("Arial", 5%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETbuttonPressRight>
 / items = ("402")
 / position = (50%, 2%)
 / fontstyle = ("Arial", 5%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETdisplayOff>
 / items = ("0")
 / position = (30%, 8%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETtrialEnd>
 / items = ("60")
 / position = (20%, 4%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text portETexptEnd>
 / items = ("70")
 / position = (30%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <expressions>

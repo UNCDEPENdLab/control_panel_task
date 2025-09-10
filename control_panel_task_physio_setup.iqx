@@ -1,7 +1,7 @@
 ﻿**************************************************************************************************************
 Physio software interaction
 **************************************************************************************************************
-<port instruPhaseBeginPhysio>
+<port instruBlockBeginPhysio>
 / port = LPT //  port = LPT works (https://www.millisecond.com/forums/Topic30378.aspx)
 / subport = data
 / items = ("10011110") // 158
@@ -55,7 +55,19 @@ Physio software interaction
 / items = ("01110111") // 119
 </port>
 
-<port PITphaseBeginPhysio>
+<port sendPitBeginPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("10100100") // 164
+</port>
+
+<port sendPavBlockBeginPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("10100100") // 164
+</port>
+
+<port sendPavBeginPhysio>
 / port = LPT 
 / subport = data
 / items = ("10100100") // 164
@@ -73,6 +85,21 @@ Physio software interaction
 / items = ("11010001") // new= 209 // old= ("01100100") // 100
 </port>
 
+<port leftStimuliChosenPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("00000000")  // S CS+ = 149, S CS- = 153, NS CS+ = 171, NS CS- = 178
+</port>
+
+<port rightStimuliChosenPhysio>
+/ port = LPT 
+/ subport = data
+/ items = ("00000000")  // S CS+ = 149, S CS- = 153, NS CS+ = 171, NS CS- = 178
+</port>
+
 <expressions>
 / setport1 = port.PITMachPhysio.setitem(values.physioMarkerPITcolor, 1);
+
+/ setport4 = port.leftStimuliChosenPhysio.setitem(values.physioMarkerPitLeftStimuli, 1);
+/ setport5 = port.rightStimuliChosenPhysio.setitem(values.physioMarkerPitRightStimuli, 1);
 </expressions>

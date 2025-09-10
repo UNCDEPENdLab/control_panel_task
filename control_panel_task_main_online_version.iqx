@@ -30,8 +30,8 @@ Initializing the parameters
 <parameters>
 / lastScriptUpdated = "09/10/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
-/ includePhysio = 1					// Set this to 1 if physio data needs to be recorded
-/ includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
+/ includePhysio = 0					// Set this to 1 if physio data needs to be recorded
+/ includeEyetracker = 0				// Set this to 1 if eye-tracking data needs to be recorded
 									// Also make sure for eye-tracking the <include> function is uncommented
 / pavLeftXPos = 42%
 / pavRightXPos = 56%
@@ -45,9 +45,9 @@ Initializing the parameters
 / PITResponseMaxTime = 2000
 / PITFeedbackDur = 1000
 
-/ leftButtonBox = 48				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
-/ rightButtonBox = 33				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
-/ spaceButtonBox = 32 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
+/ leftButtonBox = 203// 48				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
+/ rightButtonBox = 205// 33				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
+/ spaceButtonBox = 57//32 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
 </parameters>
 
 
@@ -239,8 +239,8 @@ Defining background
 Creating stimuli 
 **************************************************************************************************************
 <picture socialStimuli>
-/ items = ("stimuli/social/human_image_1.png", "stimuli/social/human_image_2.png",
-"stimuli/social/human_image_3.png")
+/ items = ("human_image_1.png", "human_image_2.png",
+"human_image_3.png")
 / position = (values.socialXPos, values.socialYPos)
 / size = (values.socialStimuliSize, values.socialStimuliSize)
 / select = values.chooseSocialStimuli
@@ -248,29 +248,29 @@ Creating stimuli
 </picture>
 
 <picture socialStimuli1>
-/ items = ("stimuli/social/human_image_1_pavquiz.png")
+/ items = ("human_image_1_pavquiz.png")
 / position = (values.socialXPos1, values.pavQuizYPos)
 / size = (values.socialStimuliSize_pavQuiz, values.socialStimuliSize_pavQuiz)
 / erase = false
 </picture>
 
 <picture socialStimuli2>
-/ items = ("stimuli/social/human_image_2_pavquiz.png")
+/ items = ("human_image_2_pavquiz.png")
 / position = (values.socialXPos2, values.pavQuizYPos)
 / size = (values.socialStimuliSize_pavQuiz, values.socialStimuliSize_pavQuiz)
 / erase = false
 </picture>
 
 <picture socialStimuli3>
-/ items = ("stimuli/social/human_image_3_pavquiz.png")
+/ items = ("human_image_3_pavquiz.png")
 / position = (values.socialXPos3, values.pavQuizYPos)
 / size = (values.socialStimuliSize_pavQuiz, values.socialStimuliSize_pavQuiz)
 / erase = false
 </picture>
 
 <picture aversiveOutcomeStimuli>
-/ items = ("stimuli/inst_aversive/inst_aversive_image_1.png", "stimuli/inst_aversive/inst_aversive_image_2.png",
-"stimuli/inst_aversive/inst_aversive_image_3.png")
+/ items = ("inst_aversive_image_1.png", "inst_aversive_image_2.png",
+"inst_aversive_image_3.png")
 / position = (values.aversiveOutcomeXPos, values.aversiveOutcomeYPos)
 / size = (values.aversiveOutcomeSize, values.aversiveOutcomeSize)
 / select = values.chooseAversiveOutcome
@@ -286,8 +286,8 @@ Creating stimuli
 
 
 <picture fractalStimuli>
-/ items = ("stimuli/fractals/fractal_image_1.png", "stimuli/fractals/fractal_image_2.png",
-"stimuli/fractals/fractal_image_3.png")
+/ items = ("fractal_image_1.png", "fractal_image_2.png",
+"fractal_image_3.png")
 / position = (values.fractalXPos, values.fractalYPos)
 / size = (values.fractalStimuliSize, values.fractalStimuliSize)
 / select = values.chooseFractalStimuli
@@ -295,21 +295,21 @@ Creating stimuli
 </picture>
 
 <picture fractalStimuli1>
-/ items = ("stimuli/fractals/fractal_image_1_pavquiz.png")
+/ items = ("fractal_image_1_pavquiz.png")
 / position = (values.fractalXPos1, values.pavQuizYPos)
 / size = (values.fractalStimuliSize_pavQuiz, values.fractalStimuliSize_pavQuiz)
 / erase = false
 </picture>
 
 <picture fractalStimuli2>
-/ items = ("stimuli/fractals/fractal_image_2_pavquiz.png")
+/ items = ("fractal_image_2_pavquiz.png")
 / position = (values.fractalXPos2, values.pavQuizYPos)
 / size = (values.fractalStimuliSize_pavQuiz, values.fractalStimuliSize_pavQuiz)
 / erase = false
 </picture>
 
 <picture fractalStimuli3>
-/ items = ("stimuli/fractals/fractal_image_3_pavquiz.png")
+/ items = ("fractal_image_3_pavquiz.png")
 / position = (values.fractalXPos3, values.pavQuizYPos)
 / size = (values.fractalStimuliSize_pavQuiz, values.fractalStimuliSize_pavQuiz)
 / erase = false
@@ -317,79 +317,79 @@ Creating stimuli
 
 
 <picture alarmTurnedOff>
-/ items = ("stimuli/alarm_turned_off.png")
+/ items = ("alarm_turned_off.png")
 / position = (50%, values.alarmTurnedOffYPos)
 / size = (65%, 65%)
 / erase = false
 </picture>
 
 <picture controlPanel>
-/ items = ("stimuli/control_panel.png")
+/ items = ("control_panel.png")
 / position = (50%, 50%)
 / size = (75%, 75%)
 / erase = false
 </picture>
 
 <picture pavQuizBackPanel>
-/ items = ("stimuli/pav_quiz_back_panel.png")
+/ items = ("pav_quiz_back_panel.png")
 / position = (50%, 90%)
 / size = (100%, 110%)
 / erase = false
 </picture>
 
 <picture leverBothUpright>
-/ items = ("stimuli/lever_both_upright.png")
+/ items = ("lever_both_upright.png")
 / position = (50%, 50%)
 / size = (75%, 75%)
 / erase = false
 </picture>
 
 <picture leverLeftDown>
-/ items = ("stimuli/lever_left_down.png")
+/ items = ("lever_left_down.png")
 / position = (50%, 50%)
 / size = (75%, 75%)
 / erase = false
 </picture>
 
 <picture leverRightDown>
-/ items = ("stimuli/lever_right_down.png")
+/ items = ("lever_right_down.png")
 / position = (50%, 50%)
 / size = (75%, 75%)
 / erase = false
 </picture>
 
 <picture playButton>
-/ items = ("stimuli/misc/play-button.png")
+/ items = ("play-button.png")
 / position = (50%, 74%)
 / size = (21%, 21%)
 / erase = false
 </picture>
 
 <picture nextButton>
-/ items = ("stimuli/misc/next-button.png")
+/ items = ("next-button.png")
 / position = (83%, 78%)
 / size = (15%, 15%)
 </picture>
 
 <picture yLetter>
-/ items = ("stimuli/misc/Y-letter.png")
+/ items = ("Y-letter.png")
 / position = (20%, 70%)
 / size = (15%, 15%)
 </picture>
 
 <picture nLetter>
-/ items = ("stimuli/misc/N-letter.png")
+/ items = ("N-letter.png")
 / position = (80%, 70%)
 / size = (15%, 15%)
 </picture>
 
 <sound testSound>
-/ items = ("stimuli/sound/test_sound.wav")
+/ items = ("test_sound.wav")
 / pan = 0
 </sound>
 
 <picture fixation> 
-/ items = ("stimuli/misc/fixation.png")
+/ items = ("fixation.png")
 / position = (50%, 50%)
 / size = (6%, 6%)
 / erase = false
@@ -669,8 +669,8 @@ Finding aversive sounds for the task
 **************************************************************************************************************
 
 <sound allTestSounds>
-/ items = ("stimuli/sound/test_aversive_sounds/115-trimmed.wav", "stimuli/sound/test_aversive_sounds/380-trimmed.wav", "stimuli/sound/test_aversive_sounds/420-trimmed.wav", "stimuli/sound/test_aversive_sounds/624-trimmed.wav",
-"stimuli/sound/test_aversive_sounds/714-trimmed.wav", "stimuli/sound/test_aversive_sounds/719-trimmed.wav", "stimuli/sound/test_aversive_sounds/730-trimmed.wav", "stimuli/sound/test_aversive_sounds/910-trimmed.wav")
+/ items = ("115-trimmed.wav", "380-trimmed.wav", "420-trimmed.wav", "624-trimmed.wav",
+"714-trimmed.wav", "719-trimmed.wav", "730-trimmed.wav", "910-trimmed.wav")
 / pan = 0
 / erase = false
 / select = values.chooseSound

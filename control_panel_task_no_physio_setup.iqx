@@ -5,49 +5,63 @@ This runs when we don't want physio data to be collected but need a switch in th
 / items = ("beginExpt")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
-<text rewardAdisplayedPhysio>
-/ items = ("rewardA")
+<text sendPitBeginPhysio>
+/ items = ("PIT begin")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
-<text rewardBdisplayedPhysio>
-/ items = ("rewardB")
+<text instruBlockBeginPhysio>
+/ items = ("instru block begin")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
+</text>
+
+<text sendPavBeginPhysio>
+/ items = ("pav begin")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor =  (26, 26, 26)     // 10% dark gray
+</text>
+
+<text sendPavBlockBeginPhysio>
+/ items = ("pav block begin")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text instruQuizFeedbackPhysio>
 / items = ("instruQuizFeedback")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text pavPhaseBeginPhysio>
 / items = ("beginExpt")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text pavMachinePhysio>
 / items = ("pavMachine")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text pavSnackPhysio>
 / items = ("pavSnack")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor = (26, 26, 26)     // 10% dark gray
 </text>
 
 <text pavQuizPhysio>
@@ -61,26 +75,40 @@ This runs when we don't want physio data to be collected but need a switch in th
 / items = ("pavQuizFeedback")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text PITphaseBeginPhysio>
 / items = ("beginExpt")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text PITMachPhysio>
 / items = ("pitMachine")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>
 
 <text experimentEndPhysio>
 / items = ("endExpt")
 / position = (90%, 2%)
 / fontstyle = ("Arial", 3%)
-/ txcolor = black // white
+/ txcolor =  (26, 26, 26)     // 10% dark gray
+</text>
+
+<text leftStimuliChosenPhysio>
+/ items = ("leftStimuliChosenPhysio")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor =  (26, 26, 26)     // 10% dark gray
+</text>
+
+<text rightStimuliChosenPhysio>
+/ items = ("rightStimuliChosenPhysio")
+/ position = (90%, 2%)
+/ fontstyle = ("Arial", 3%)
+/ txcolor =  (26, 26, 26)     // 10% dark gray
 </text>

@@ -1,0 +1,13 @@
+# notes
+*.docx
+*.pdf
+*.edf
+*.acq
+*.iqdat
+*.zip
+*.log
+*.doc
+data/
+audit/
+eyetracker/
+physio/

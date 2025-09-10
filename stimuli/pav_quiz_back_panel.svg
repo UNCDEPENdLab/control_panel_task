@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="200mm"
+   height="200mm"
+   viewBox="0 0 200 200"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="pav_quiz_back_panel.svg"
+   inkscape:export-filename="pav_quiz_back_panel.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.7646054"
+     inkscape:cx="476.71649"
+     inkscape:cy="270.07395"
+     inkscape:window-width="1920"
+     inkscape:window-height="1094"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1"
+     inkscape:export-bgcolor="#00000000" /><defs
+     id="defs1" /><g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="background" /><g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"><path
+       style="clip-rule:evenodd;fill:#c8c8c8;fill-opacity:1;fill-rule:evenodd;stroke-width:0.264581;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
+       fill="#060708"
+       d="m 0.83457002,28.135004 c 66.12486998,-0.0513 132.24967998,0 198.37452998,0.15372 0.33389,0.230592 0.60049,0.486972 0.79989,0.768582 0.35571,18.44603 0.35571,36.89206 0,55.3381 -0.24805,0.43994 -0.69264,0.7984 -1.3331,1.07601 -65.76918,0.20506 -131.538874,0.20506 -197.3080473,0 -0.64045584,-0.27761 -1.08519826,-0.63607 -1.33316471,-1.07601 -0.35568802,-18.54841 -0.35568802,-37.09711 0,-55.64554 0.38235082,-0.16723 0.64897893,-0.3723 0.79989203,-0.614862 z"
+       id="path77" /></g></svg>
