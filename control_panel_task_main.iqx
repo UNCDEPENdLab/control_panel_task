@@ -402,20 +402,20 @@ Sound calibration procedure
 <item soundCalibrationText>
 / 1 = "We will perform a sound calibration.
 ~nPlease look at the small black speaker located to the right of the keyboard.
-Please make sure that you can reach the speaker knob to change the volumn.
+Please make sure that you can reach the speaker knob to change the volume.
 ~nTo hear the sound use your mouse to press the play button below."
 / 2 = "Did you hear the sound? 
 ~n~nPress 'Y' for Yes and 'N' for No using your mouse."
 / 3 = "Please make sure the speakers are ON.
-~nTry increasing your volumn and listening for the sound again."
+~nTry increasing your volume and listening for the sound again."
 / 4 = "This test will abort due to speaker issues.
 ~n~nPlease let the experimenter know the issue.
 ~n~n~n~n~n~n~nThis script will abort in 10s."
-/ 5 = "Decrease or Increase your speaker volumn based on the prompts shown on the next screen.
+/ 5 = "Decrease or Increase your speaker volume based on the prompts shown on the next screen.
 ~nClick the play button with your mouse to listen to the sound. You can listen to the sound multiple times by pressing this button.
 ~nClick the next arrow sign on the lower right side of the screen when you are done."
-/ 6 = "Now that you know the range of volumn on your speaker, click the play button with your mouse to listen to the sound again.
-~nCrank up the speaker till the loudness is at a 9 out of 10 where 10 is the highest volumn that you had set previously.
+/ 6 = "Now that you know the range of volume on your speaker, click the play button with your mouse to listen to the sound again.
+~nCrank up the speaker till the loudness is at a 9 out of 10 where 10 is the highest volume that you had set previously.
 ~nClick the next arrow sign when you are done."
 </item>
 
@@ -512,12 +512,12 @@ Please make sure that you can reach the speaker knob to change the volumn.
 </trial>
 
 <item soundCalibrationText2>
-/ 1 = "Increase the volumn to a level which makes you very irritated and makes you want to stop the experiment right away.
+/ 1 = "Increase the volume to a level which makes you very irritated and makes you want to stop the experiment right away.
 ~nYou can listen to the sound multiple times by pressing the play button with your mouse.
 ~nClick the next arrow sign when you are done."
-/ 2 = "Decrease the volumn to a level where you can barely hear the sound.
+/ 2 = "Decrease the volume to a level where you can barely hear the sound.
 ~nClick the next arrow sign when you are done."
-/ 3 = "Set the volumn to a level which feel comfortable, not too loud nor too low.
+/ 3 = "Set the volume to a level which feel comfortable, not too loud nor too low.
 ~nClick the next arrow sign when you are done."
 </item>
 
@@ -598,7 +598,7 @@ Please make sure that you can reach the speaker knob to change the volumn.
 ]
 </trial>
 
-<trial setSpeakerVolumn>
+<trial setSpeakervolume>
 / ontrialbegin = [
 	values.soundCalibrationTextIndex = 6;
 ]
@@ -610,13 +610,13 @@ Please make sure that you can reach the speaker knob to change the volumn.
 / responsemessage = (playButton, testSound, 3000)
 / recorddata = true
 / branch = [
-	if (trial.setSpeakerVolumn.response == "playButton") {
-		return trial.setSpeakerVolumnContinued;
+	if (trial.setSpeakervolume.response == "playButton") {
+		return trial.setSpeakervolumeContinued;
 	}
 ]
 </trial>
 
-<trial setSpeakerVolumnContinued>
+<trial setSpeakervolumeContinued>
 / stimulustimes = [0 = soundCalibrationText, playButton, nextButton]
 / inputdevice = mouse
 / validresponse = (playButton, nextButton)
@@ -625,8 +625,8 @@ Please make sure that you can reach the speaker knob to change the volumn.
 / responsemessage = (playButton, testSound, 3000)
 / recorddata = true
 / branch = [
-	if (trial.setSpeakerVolumnContinued.response == "playButton")
-		trial.setSpeakerVolumnContinued;
+	if (trial.setSpeakervolumeContinued.response == "playButton")
+		trial.setSpeakervolumeContinued;
 ]
 </trial>
 
@@ -656,7 +656,7 @@ Please make sure that you can reach the speaker knob to change the volumn.
 	1 = speakerOn;
 	2 = soundCalibrationFirst;
 	3-5 = soundCalibration;
-	6 = setSpeakerVolumn;
+	6 = setSpeakervolume;
 	7 = soundCalibrationFinish;
 ]
 / datastreams = (eyetracker)
