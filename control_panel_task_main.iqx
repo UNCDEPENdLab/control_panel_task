@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "09/10/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "09/11/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 1					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
@@ -45,9 +45,9 @@ Initializing the parameters
 / PITResponseMaxTime = 2000
 / PITFeedbackDur = 1000
 
-/ leftButtonBox = 48				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
-/ rightButtonBox = 33				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
-/ spaceButtonBox = 32 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
+/ leftButtonBox = 3				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
+/ rightButtonBox = 5				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
+/ spaceButtonBox = 4 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
 </parameters>
 
 
