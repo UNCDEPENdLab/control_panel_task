@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "09/11/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "10/02/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 1					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
@@ -37,7 +37,7 @@ Initializing the parameters
 / pavRightXPos = 56%
 / instruITImin = 500
 / instruITImax = 1500
-/ instruResponseMaxTime = 2000
+/ instruResponseMaxTime = 1500 // 2000
 / instruFeedbackDur = 1000
 
 / pitITImin = 500
@@ -1059,7 +1059,7 @@ Instrumental phase
 	values.physioMarkerinstLeftStimuli = "";
 	values.physioMarkerinstRightStimuli = "";
 ]
-/ stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn; 998 = portETdisplayOff; 999 = portETtrialEnd] 
+/ stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn; 1498 = portETdisplayOff; 1499 = portETtrialEnd] 
 / beginresponsetime = 0
 / responseinterrupt = immediate // if a response is made, this will not send out portRTdisplayOff and portETtrialEnd. These will be sent in the leftStimuliChosen/rightStimuliChosen trial
 / validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
@@ -1229,7 +1229,7 @@ Instrumental phase
 ]
 / stimulustimes = [0 = clearscreen, aversiveOutcomeStimuli, allTestSounds, instruQuizQuestion, instruQuizInstructions, portETtrialID; 1 = portETdisplayOn]
 / validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
-/ correctresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
+// correctresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
 / isvalidresponse = [
 	if (trial.instruQuiz.response == parameters.leftButtonBox) {
 		values.responseKeyPressed = "left";
@@ -1241,7 +1241,8 @@ Instrumental phase
 		values.RTFromScriptStart = script.elapsedtime;
 		values.RTfromTrialStart = trial.instruQuiz.elapsedtime;	
 		true;
-	};
+	} else {
+	}
 ]
 / recorddata = true
 / screencapture = true
@@ -1314,6 +1315,8 @@ Instrumental phase
 	}
 ]
 </block>
+
+
 
 <text instruTermination>
 / items = ("You did not learn the contingency to turn off the alarms.
@@ -1917,11 +1920,17 @@ Pavlovian phase:
 	}	
 	values.aversiveOutcomeYPos = 50%;
 	values.alarmTurnedOffYPos = 52.5%;
+	
+	if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect < 6 && values.pavBlockQuizNumCorrect > 0){
+		// some quiz correct, need to redo others only
+		list.notRepeatTraining.appenditem() // "r","l","p"
+		
+	}
 ]
 / branch = [
 	if (values.pavBlockNum < 2) {
 		return block.pavBlock;
-	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2){
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect == 0){ // no quizzes correct, redo entire block again
 		return block.pavBlock;
 	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect == 2){ // move to PIT phase
 		return block.pitPhaseInstructions;
@@ -1931,6 +1940,17 @@ Pavlovian phase:
 ]
 </block>
 
+		if (values.pavBlockNum < 2) {
+		return block.pavBlock;
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect == 0){ // no quizzes correct, redo entire block again
+		return block.pavBlock;
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect < 6 && values.pavBlockQuizNumCorrect > 0){
+		return block.pavBlock_trainOnlyIncorrect;
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect == 2){ // move to PIT phase
+		return block.pitPhaseInstructions;
+	} else if (values.pavBlockNum == 8 && values.pavQuizzesInARowCorrect < 2) {
+		return block.pavTermination;
+	}
 
 <text pavTermination>
 / items = ("You did not learn the association between alerts and alarms.
@@ -2134,7 +2154,7 @@ PIT Phase
 		values.pitCueAssociatedButton = "safety";
 	}
 ]
-/ stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn]
+/ stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn; 1498 = portETdisplayOff; 1499 = portETtrialEnd] 
 / beginresponsetime = 0
 / validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
 / isvalidresponse = [
