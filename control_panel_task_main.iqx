@@ -933,6 +933,7 @@ Instrumental phase instructions
 ]
 / beginresponsetime = 200
 / stimulustimes = [0 = clearscreen, instInstructions, spaceBarContinueInstructions]
+/ validresponse = (parameters.spaceButtonBox)
 / correctresponse = (parameters.spaceButtonBox) 
 / recorddata = true
 / ontrialend = [
