@@ -1920,12 +1920,6 @@ Pavlovian phase:
 	}	
 	values.aversiveOutcomeYPos = 50%;
 	values.alarmTurnedOffYPos = 52.5%;
-	
-	if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect < 6 && values.pavBlockQuizNumCorrect > 0){
-		// some quiz correct, need to redo others only
-		list.notRepeatTraining.appenditem() // "r","l","p"
-		
-	}
 ]
 / branch = [
 	if (values.pavBlockNum < 2) {
