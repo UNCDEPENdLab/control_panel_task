@@ -1390,6 +1390,7 @@ The combination of human and fractal will be randomized and the location (right 
 	values.pavInstructionIndex = values.pavInstructionIndex + 1;
 ]
 / stimulusframes = [1 = clearscreen, pavInstructions, spaceBarContinueInstructions]
+/ validresponse = (parameters.spaceButtonBox) 
 / correctresponse = (parameters.spaceButtonBox) 
 / recorddata = true
 / ontrialend = [
