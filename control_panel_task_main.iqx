@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "10/02/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "10/07/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 1					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
@@ -45,7 +45,7 @@ Initializing the parameters
 / PITResponseMaxTime = 2000
 / PITFeedbackDur = 1000
 
-/ leftButtonBox = 3				// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
+/ leftButtonBox = 3					// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
 / rightButtonBox = 5				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
 / spaceButtonBox = 4 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
 </parameters>
@@ -197,6 +197,8 @@ Values which will be updated during the trials
 / soundArousalRating = ""
 / physioMarkerinstLeftStimuli = ""
 / physioMarkerinstRightStimuli = ""
+/ currentOutcomeLeft = ""
+/ currentOutcomeRight = ""
 </values>
 
 **************************************************************************************************************
@@ -209,7 +211,7 @@ values.phaseName, script.currenttime, values.trialStartTime, values.trialEndTime
 trialcode, values.instruBlockNum, values.instruTrialNum, values.chooseAversiveOutcome, values.chooseFractalStimuli, values.chooseSocialStimuli, 
 values.chooseSound, values.soundAversivenessRating, values.soundArousalRating,
 values.sound3rdAversive, values.leftButtonAversiveSound, values.rightButtonAversiveSound,
-values.instRightAversiveOutcome, values.instLeftAversiveOutcome, values.noInstResponseOutcome, values.richInstOption, values.poorInstOption, 
+values.instRightAversiveOutcome, values.instLeftAversiveOutcome, values.noInstResponseOutcome, values.richInstOption, values.poorInstOption, values.currentOutcomeLeft, values.currentOutcomeRight,
 trial.instruQuiz.response, values.responseKeyPressed, values.currentOutcome, values.socialXPos, values.fractalXPos,
 values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, values.numBlockQuizzesPassedInARow, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3,
@@ -218,7 +220,7 @@ values.pitTrialNum, values.pitTrialTypeNum, values.pitTrialType, values.rightSoc
 values.safeSocialTrialNum, values.safeFractalTrialNum, values.noPavCueTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
 values.rightInstButtonRelatedHuman, values.leftInstButtonRelatedHuman, values.rightInstButtonRelatedFractal, values.leftInstButtonRelatedFractal, values.pavOnlyHuman
 )
-</data> 
+</data>
 
 **************************************************************************************************************
 Defining background 
@@ -1001,7 +1003,6 @@ Instrumental phase
 / screencapture = false
 </trial>
 
-
 <expressions>
 / instruITIdur = rand(parameters.instruITImin, parameters.instruITImax)
 </expressions>
@@ -1009,6 +1010,8 @@ Instrumental phase
 <trial instruITI_start>
 / ontrialbegin = [
 	values.chooseSound = "";
+	values.currentOutcome = "";
+	values.chooseAversiveOutcome = "";
 	values.instruTrialNum += 1;
 	values.trialStartTime = trial.instruITI_start.timestamp;
 	values.markerETtrialID = 201;
@@ -1019,6 +1022,84 @@ Instrumental phase
 	expressions.setport3;
 	expressions.setport4;
 	expressions.setport5;
+	
+	if (trial.instruResponse.response == parameters.leftButtonBox){ // left button pressed in last trial
+
+		// update the left button outcome
+		if (values.richInstOption == "l") {
+			// if left button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeLeft = list.probRichOption.nextvalue;
+		} else if (values.poorInstOption == "l") {
+			// if left button is the poor instrumental option
+			values.currentOutcomeLeft = list.probPoorOption.nextvalue;
+		}
+		
+		// if the previous outcome for right button was -1 then roll dice again
+		if (values.currentOutcomeRight == -1){
+			// update the right button outcome
+			if (values.richInstOption == "r") {
+				// if right button is the rich instrumental option
+				// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+				values.currentOutcomeRight = list.probRichOption.nextvalue;
+			} else if (values.poorInstOption == "r") {
+				// if right button is the poor instrumental option
+				values.currentOutcomeRight = list.probPoorOption.nextvalue;
+			}
+		} else if (values.currentOutcomeRight == 0){
+			// keep the right outcome stuck
+			values.currentOutcomeRight = values.currentOutcomeRight;
+		}
+		
+	} else if (trial.instruResponse.response == parameters.rightButtonBox){ // right button pressed in last trial
+
+		// update the right button outcome
+		if (values.richInstOption == "r") {
+			// if right button is the rich instrumental option
+			// rich option means that right button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeRight = list.probRichOption.nextvalue;
+		} else if (values.poorInstOption == "r") {
+			// if right button is the poor instrumental option
+			values.currentOutcomeRight = list.probPoorOption.nextvalue;
+		}
+		
+		// if the previous outcome for right button was -1 then roll dice again
+		if (values.currentOutcomeLeft == -1){
+			// update the right button outcome
+			if (values.richInstOption == "l") {
+				// if left button is the rich instrumental option
+				// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+				values.currentOutcomeLeft = list.probRichOption.nextvalue;
+			} else if (values.poorInstOption == "l") {
+				// if left button is the poor instrumental option
+				values.currentOutcomeLeft = list.probPoorOption.nextvalue;
+			}
+		} else if (values.currentOutcomeLeft == 0){
+			// keep the left outcome stuck
+			values.currentOutcomeLeft = values.currentOutcomeLeft;
+		}
+	} else { // first trial, roll dice for both
+		
+		// update the left button outcome
+		if (values.richInstOption == "l") {
+			// if left button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeLeft = list.probRichOption.nextvalue;
+		} else if (values.poorInstOption == "l") {
+			// if left button is the poor instrumental option
+			values.currentOutcomeLeft = list.probPoorOption.nextvalue;
+		}
+		
+		// update the right button outcome
+		if (values.richInstOption == "r") {
+			// if right button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeRight = list.probRichOption.nextvalue;
+		} else if (values.poorInstOption == "r") {
+			// if right button is the poor instrumental option
+			values.currentOutcomeRight = list.probPoorOption.nextvalue;
+		}
+	}
 ]
 / stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn] 
 / response = noresponse
@@ -1112,19 +1193,7 @@ Instrumental phase
 / selectionrate = always
 </list>
 
-<trial instruFeedback>
-/ ontrialbegin = [
-	values.responseKeyPressed = "";
-	values.trialStartTime = trial.instruFeedback.timestamp;
-	values.markerETtrialID = 201;
-	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruTrialNum));
-	values.markerETtrialID = concat(values.markerETtrialID, 101);
-	values.markerETDisplayOn = 3010;
-	values.markerETdisplayOff = 5010;
-	expressions.setport3;
-	expressions.setport4;
-	expressions.setport5;
-	if (trial.instruResponse.response == parameters.leftButtonBox) {
+if (trial.instruResponse.response == parameters.leftButtonBox) {
 		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
 		// choosing if we should provide the aversive or alarm turned off outcome
 		if (values.richInstOption == "l") {
@@ -1158,6 +1227,49 @@ Instrumental phase
 			// if left button is the poor instrumental option
 			values.currentOutcome = list.probPoorOption.nextvalue;
 		}
+		if (values.currentOutcome == -1) {
+			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
+			values.chooseSound = values.rightButtonAversiveSound;
+			trial.instruFeedback.insertstimulustime(sound.allTestSounds, 0);
+			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+		} else {
+			values.chooseAversiveOutcome = 0;
+			values.chooseSound = "";
+			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
+		}
+	} else {
+		// if no button is pressed, the participants receive a 3rd aversive noise
+		trial.instruFeedback.insertStimulusTime(picture.leverBothUpright, 0);
+		values.chooseSound = values.sound3rdAversive;
+		trial.instruFeedback.insertStimulusTime(sound.allTestSounds, 0);
+	}
+<trial instruFeedback>
+/ ontrialbegin = [
+	values.trialStartTime = trial.instruFeedback.timestamp;
+	values.markerETtrialID = 201;
+	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruTrialNum));
+	values.markerETtrialID = concat(values.markerETtrialID, 101);
+	values.markerETDisplayOn = 3010;
+	values.markerETdisplayOff = 5010;
+	expressions.setport3;
+	expressions.setport4;
+	expressions.setport5;
+	if (trial.instruResponse.response == parameters.leftButtonBox) {
+		trial.instruFeedback.insertStimulustime(picture.leverLeftDown, 0);
+		values.currentOutcome = values.currentOutcomeLeft;
+		if (values.currentOutcome == -1) {
+			values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
+			values.chooseSound = values.leftButtonAversiveSound;
+			trial.instruFeedback.insertstimulustime(sound.allTestSounds, 0);
+			trial.instruFeedback.insertstimulustime(picture.aversiveOutcomeStimuli, 0);
+		} else {
+			values.chooseAversiveOutcome = 0;
+			values.chooseSound = "";
+			trial.instruFeedback.insertstimulustime(picture.alarmTurnedOff, 0);
+		}
+	} else if (trial.instruResponse.response == parameters.rightButtonBox) {
+		trial.instruFeedback.insertStimulustime(picture.leverRightDown, 0);
+		values.currentOutcome = values.currentOutcomeRight;
 		if (values.currentOutcome == -1) {
 			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
 			values.chooseSound = values.rightButtonAversiveSound;
@@ -2062,6 +2174,83 @@ PIT Phase
 	expressions.setport4;
 	expressions.setport5;
 	values.chooseSound = "";
+	
+	if (trial.pitTrial.response == parameters.leftButtonBox){ // left button pressed in last trial
+
+		// update the left button outcome
+		if (values.richInstOption == "l") {
+			// if left button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeLeft = list.pitProbRichOption.nextvalue;
+		} else if (values.poorInstOption == "l") {
+			// if left button is the poor instrumental option
+			values.currentOutcomeLeft = list.pitProbPoorOption.nextvalue;
+		}
+		
+		// if the previous outcome for right button was -1 then roll dice again
+		if (values.currentOutcomeRight == -1){
+			// update the right button outcome
+			if (values.richInstOption == "r") {
+				// if right button is the rich instrumental option
+				// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+				values.currentOutcomeRight = list.pitProbRichOption.nextvalue;
+			} else if (values.poorInstOption == "r") {
+				// if right button is the poor instrumental option
+				values.currentOutcomeRight = list.pitProbPoorOption.nextvalue;
+			}
+		} else if (values.currentOutcomeRight == 0){
+			// keep the right outcome stuck
+			values.currentOutcomeRight = values.currentOutcomeRight;
+		}
+		
+	} else if (trial.pitTrial.response == parameters.rightButtonBox){ // right button pressed in last trial
+
+		// update the right button outcome
+		if (values.richInstOption == "r") {
+			// if right button is the rich instrumental option
+			// rich option means that right button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeRight = list.pitProbRichOption.nextvalue;
+		} else if (values.poorInstOption == "r") {
+			// if right button is the poor instrumental option
+			values.currentOutcomeRight = list.pitProbPoorOption.nextvalue;
+		}
+		
+		// if the previous outcome for right button was -1 then roll dice again
+		if (values.currentOutcomeLeft == -1){
+			// update the right button outcome
+			if (values.richInstOption == "l") {
+				// if left button is the rich instrumental option
+				// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+				values.currentOutcomeLeft = list.pitProbRichOption.nextvalue;
+			} else if (values.poorInstOption == "l") {
+				// if left button is the poor instrumental option
+				values.currentOutcomeLeft = list.pitProbPoorOption.nextvalue;
+			}
+		} else if (values.currentOutcomeLeft == 0){
+			// keep the left outcome stuck
+			values.currentOutcomeLeft = values.currentOutcomeLeft;
+		}
+	} else { // start of trials
+		// update the left button outcome
+		if (values.richInstOption == "l") {
+			// if left button is the rich instrumental option
+			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeLeft = list.pitProbRichOption.nextvalue;
+		} else if (values.poorInstOption == "l") {
+			// if left button is the poor instrumental option
+			values.currentOutcomeLeft = list.pitProbPoorOption.nextvalue;
+		}
+		
+		// update the right button outcome
+		if (values.richInstOption == "r") {
+			// if right button is the rich instrumental option
+			// rich option means that right button prevents the aversive outcome O1 with a 70% probability.
+			values.currentOutcomeRight = list.pitProbRichOption.nextvalue;
+		} else if (values.poorInstOption == "r") {
+			// if right button is the poor instrumental option
+			values.currentOutcomeRight = list.pitProbPoorOption.nextvalue;
+		}
+	}
 ]
 / stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn]
 / trialduration = values.pitITIDur - 2
@@ -2212,12 +2401,12 @@ PIT Phase
 			values.pitResponseRichOption = "rich";
 			// if left button is the rich instrumental option
 			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
-			values.currentOutcome = list.pitProbRichOption.nextvalue;
+			values.currentOutcome = values.currentOutcomeLeft;
 			// 0 means alarm turned off outcome; -1 means aversive outcome
 		} else if (values.poorInstOption == "l") {
 			values.pitResponseRichOption = "poor";
 			// if left button is the poor instrumental option
-			values.currentOutcome = list.pitProbPoorOption.nextvalue;
+			values.currentOutcome = values.currentOutcomeLeft;
 		}
 		if (values.currentOutcome == -1) {
 			values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
@@ -2234,14 +2423,14 @@ PIT Phase
 		// choosing if we should provide the aversive or alarm turned off outcome
 		if (values.richInstOption == "r") {
 			values.pitResponseRichOption = "rich";
-			// if left button is the rich instrumental option
+			// if right button is the rich instrumental option
 			// rich option means that left button prevents the aversive outcome O1 with a 70% probability.
-			values.currentOutcome = list.pitProbRichOption.nextvalue;
+			values.currentOutcome = values.currentOutcomeRight;
 			// 0 means alarm turned off outcome; -1 means aversive outcome
 		} else if (values.poorInstOption == "r") {
 			values.pitResponseRichOption = "poor";
-			// if left button is the poor instrumental option
-			values.currentOutcome = list.pitProbPoorOption.nextvalue;
+			// if right button is the poor instrumental option
+			values.currentOutcome = values.currentOutcomeRight;
 		}
 		if (values.currentOutcome == -1) {
 			values.chooseAversiveOutcome = values.instRightAversiveOutcome;
