@@ -1399,22 +1399,18 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow - 1;
 	}
 ]
-/ branch = [
-	if (values.instruQuizTrialNum < 2) {
-		return trial.instruQuiz;
-	}
-]
 </trial>
 
 
 <block instBlock> // repeat blocks upto 8 times and a minimum of 2 times till the participant answers questions correctly two times in a row
 / onblockbegin = [
 	values.phaseName = "instruBlock";
+	values.instruQuizTrialNum = 0;
 ]
 / trials = [
 	1 = sendInstruBlockBeginPhysio;
-	2-51 = instruITI_start;
-	52 = instruQuiz;
+	2-10 = instruITI_start;
+	11-12 = instruQuiz;
 ]
 / screencapture = true
 / datastreams = (eyetracker)
@@ -1428,6 +1424,8 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	}
 ]
 </block>
+2-51 = instruITI_start;
+52-53 = instruQuiz;
 
 
 
@@ -1502,10 +1500,11 @@ The combination of human and fractal will be randomized and the location (right 
 	values.trialStartTime = trial.pavInstructions.timestamp;
 	values.pavInstructionIndex = values.pavInstructionIndex + 1;
 ]
-/ stimulusframes = [1 = clearscreen, pavInstructions, spaceBarContinueInstructions]
+/ stimulustimes = [0 = clearscreen, pavInstructions, spaceBarContinueInstructions]
 / validresponse = (parameters.spaceButtonBox) 
 / correctresponse = (parameters.spaceButtonBox) 
 / recorddata = true
+/ beginresponsetime = 200
 / ontrialend = [
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
@@ -1635,7 +1634,7 @@ Pavlovian phase:
 	expressions.setport5;
 ]
 / stimulustimes = [0 = clearscreen, controlPanel, portETtrialID; 1 = portETdisplayOn; 998 = portETdisplayOff; 999 = portETtrialEnd] // 4998 = portETdisplayOff; 4999 = portETtrialEnd]
-/ trialduration = 5000
+/ trialduration = 1000// 5000
 / recorddata = false
 / validresponse = (0)
 / screencapture = false
@@ -1664,7 +1663,7 @@ Pavlovian phase:
 	}
 ]
 / stimulustimes = [0 = controlPanel, socialStimuli, fractalStimuli]
-/ trialduration = 5000
+/ trialduration = 2000// 5000
 / recorddata = true
 / screencapture = true
 / branch = [
@@ -2047,6 +2046,8 @@ Pavlovian phase:
 	}
 ]
 </block>
+
+
 
 		if (values.pavBlockNum < 2) {
 		return block.pavBlock;
@@ -2470,7 +2471,7 @@ PIT Phase
 </text> 
 
 <trial PITend>
-/ stimulusframes = [1 = endPITtext, experimentEndPhysio, portETexptEnd] 
+/ stimulustimes = [0 = clearscreen, endPITtext, experimentEndPhysio, portETexptEnd] 
 / validresponse = (parameters.spaceButtonBox)
 / correctresponse = (parameters.spaceButtonBox) 
 / recorddata = false
@@ -2503,15 +2504,16 @@ PIT Phase
 ]
 / trials = [	
 	1 = sendPITBlockBeginPhysio;
-	2-211 = pitITIStart;
-	212 = PITend;
+	2-51 = pitITIStart;
+	52 = PITend;
 ]
 / screencapture = true
 / datastreams = (eyetracker)
 </block>
 
 
-
+2-211 = pitITIStart;
+	212 = PITend;
 
 
 
