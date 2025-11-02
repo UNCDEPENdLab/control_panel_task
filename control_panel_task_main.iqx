@@ -28,10 +28,10 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "10/07/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "11/02/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
-/ includePhysio = 1					// Set this to 1 if physio data needs to be recorded
-/ includeEyetracker = 1				// Set this to 1 if eye-tracking data needs to be recorded
+/ includePhysio = 0					// Set this to 1 if physio data needs to be recorded
+/ includeEyetracker = 0				// Set this to 1 if eye-tracking data needs to be recorded
 									// Also make sure for eye-tracking the <include> function is uncommented
 / pavLeftXPos = 42%
 / pavRightXPos = 56%
@@ -45,9 +45,13 @@ Initializing the parameters
 / PITResponseMaxTime = 2000
 / PITFeedbackDur = 1000
 
-/ leftButtonBox = 3					// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
-/ rightButtonBox = 5				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
-/ spaceButtonBox = 4 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
+/ numInstTrialsPerBlock = 40
+/ maxNumBlocksInst = 4
+/ maxNumBlocksPav = 4
+
+/ leftButtonBox = 203 //3					// response pad keyboard mode = 48; 	xid mode = 48; 		normal keyboard = left arrow = 203
+/ rightButtonBox = 205//5				// response pad keyboard mode = 33; 	xid mode =  176;	normal keyboard = right arrow = 205
+/ spaceButtonBox = 57 //4 				// response pad keyboard mode = 32; 	xid mode = 112; 	normal keyboard = space button = 57
 </parameters>
 
 
@@ -97,7 +101,6 @@ Values which will be updated during the trials
 / instInstructionIndex = 0
 / instruQuizTrialNum = 0
 / numBlockQuizzesPassedTotal = 0
-/ numBlockQuizzesPassedInARow = 0
 / soundCalibrationTextIndex = 0
 / soundCalibrationTextIndex2 = 0
 / trialStartTime = 0
@@ -159,7 +162,6 @@ Values which will be updated during the trials
 / leftFractalTrialNum = ""
 / safeSocialTrialNum = ""
 / safeFractalTrialNum = ""
-/ noPavCueTrialNum = ""
 / instruQuizResponse = ""
 / pitTiralTypeNum = ""
 / soundCalibrationTextYPos = ""
@@ -167,7 +169,6 @@ Values which will be updated during the trials
 / pitInstructionIndex = ""
 / pavQuizType = ""
 / thisBlockCorrectQuizzes = ""
-/ pavQuizzesInARowCorrect = ""
 / pavQuizResponse = ""
 / pavTrialNum = ""
 / pitTrialTypeNum = ""
@@ -206,18 +207,19 @@ Output data file columns
 **************************************************************************************************************
 <data>
 / audit = true
-/ columns = (build, parameters.lastScriptUpdated, values.experimentName, subject, group, session,parameters.rightButtonBox, parameters.leftButtonBox, script.startdate, script.starttime,	
+/ columns = (build, parameters.lastScriptUpdated, values.experimentName, subject, group, session,parameters.rightButtonBox, parameters.leftButtonBox, 
+parameters.numInstTrialsPerBlock, parameters.maxNumBlocksInst, parameters.maxNumBlocksPav, script.startdate, script.starttime,	
 values.phaseName, script.currenttime, values.trialStartTime, values.trialEndTime, values.trialDur, values.RTFromScriptStart, values.RTfromTrialStart,
 trialcode, values.instruBlockNum, values.instruTrialNum, values.chooseAversiveOutcome, values.chooseFractalStimuli, values.chooseSocialStimuli, 
 values.chooseSound, values.soundAversivenessRating, values.soundArousalRating,
 values.sound3rdAversive, values.leftButtonAversiveSound, values.rightButtonAversiveSound,
 values.instRightAversiveOutcome, values.instLeftAversiveOutcome, values.noInstResponseOutcome, values.richInstOption, values.poorInstOption, values.currentOutcomeLeft, values.currentOutcomeRight,
 trial.instruQuiz.response, values.responseKeyPressed, values.currentOutcome, values.socialXPos, values.fractalXPos,
-values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, values.numBlockQuizzesPassedInARow, 
+values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3,
 trial.pavQuizSocial.response, values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerGiven, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz,
 values.pitTrialNum, values.pitTrialTypeNum, values.pitTrialType, values.rightSocialTrialNum, values.leftSocialTrialNum, values.rightFractalTrialNum, values.leftFractalTrialNum, 
-values.safeSocialTrialNum, values.safeFractalTrialNum, values.noPavCueTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
+values.safeSocialTrialNum, values.safeFractalTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
 values.rightInstButtonRelatedHuman, values.leftInstButtonRelatedHuman, values.rightInstButtonRelatedFractal, values.leftInstButtonRelatedFractal, values.pavOnlyHuman
 )
 </data>
@@ -977,7 +979,6 @@ Instrumental phase
 	values.richInstOption = list.buttonOptions.nextvalue;
 	values.poorInstOption = list.buttonOptions.nextvalue;
 	values.numBlockQuizzesPassedTotal = 0;
-	values.numBlockQuizzesPassedInARow = 0;
 ]
 / stimulustimes = [0 = instruPhaseBeginPhysio; 998 = clearscreen]
 / trialduration = 1000
@@ -1393,15 +1394,12 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes == 2) {
 		// Both quizzes are completed for this block and are correct
 		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
-		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow + 1;
-	} else if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes < 2) {
-		// Both quizzes are completed for this block but atleast one quiz was incorrect
-		values.numBlockQuizzesPassedInARow = values.numBlockQuizzesPassedInARow - 1;
 	}
 ]
 </trial>
 
 
+// changing number of instrumental trials from 50 to 40 trials based on discussion with Michael
 <block instBlock> // repeat blocks upto 8 times and a minimum of 2 times till the participant answers questions correctly two times in a row
 / onblockbegin = [
 	values.phaseName = "instruBlock";
@@ -1415,17 +1413,17 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 / screencapture = true
 / datastreams = (eyetracker)
 / branch = [
-	if (values.numBlockQuizzesPassedInARow < 2 && values.instruBlockNum < 8) {
+	if (values.numBlockQuizzesPassedTotal < 2 && values.instruBlockNum < parameters.maxNumBlocksInst) {
 		return block.instBlock;
-	} else if (values.numBlockQuizzesPassedInARow < 2 && values.instruBlockNum == 8) {
-		return block.instruTermination;
-	} else if (values.numBlockQuizzesPassedInARow == 2 && values.instruBlockNum <= 8){
+	} else if (values.numBlockQuizzesPassedTotal < 2 && values.instruBlockNum == parameters.maxNumBlocksInst) {
+		return block.pavPhaseInstructions; // block.instruTermination; // Participants may continue onto next phase, even if they have not passed the current phase.
+	} else if (values.numBlockQuizzesPassedTotal == 2 && values.instruBlockNum <= parameters.maxNumBlocksInst){
 		return block.pavPhaseInstructions;
 	}
 ]
 </block>
-2-51 = instruITI_start;
-52-53 = instruQuiz;
+2-41 = instruITI_start;
+42-43 = instruQuiz;
 
 
 
@@ -1993,11 +1991,6 @@ Pavlovian phase:
 </trial>
 
 <trial pavQuizEnd>
-/ ontrialbegin = [	
-	if (values.pavQuizIsCorrect == 1){
-		values.pavBlockQuizNumCorrect = values.pavBlockQuizNumCorrect + 1;
-	}
-]
 / stimulustimes = [0 = portETdisplayOff; 1 = portETtrialEnd]
 / trialduration = 2
 / recorddata = false
@@ -2016,7 +2009,6 @@ Pavlovian phase:
 / onblockbegin = [
 	values.phaseName = "pavBlock";
 	values.pavBlockNum = values.pavBlockNum + 1;
-	values.pavBlockQuizNumCorrect = 0;
 ]
 / trials = [
 	1 = sendPavBlockBeginPhysio;
@@ -2027,28 +2019,26 @@ Pavlovian phase:
 / datastreams = (eyetracker)
 / onblockend = [
 	if (values.pavBlockQuizNumCorrect == 6){ // all quizzes in this block are correct
-		values.pavQuizzesInARowCorrect = values.pavQuizzesInARowCorrect + 1;
-	} else if (values.pavBlockQuizNumCorrect < 6){
-		values.pavQuizzesInARowCorrect = 0;
-	}	
+		values.pavBlockQuizNumCorrect = values.pavBlockQuizNumCorrect + 1;
+	}
 	values.aversiveOutcomeYPos = 50%;
 	values.alarmTurnedOffYPos = 52.5%;
 ]
 / branch = [
 	if (values.pavBlockNum < 2) {
 		return block.pavBlock;
-	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect == 0){ // no quizzes correct, redo entire block again
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2){ // quiz correct less than 2
 		return block.pavBlock;
-	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect == 2){ // move to PIT phase
+	} else if (values.pavBlockNum >= 2 && values.pavBlockNum <= parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect == 2){ // move to PIT phase
 		return block.pitPhaseInstructions;
-	} else if (values.pavBlockNum == 8 && values.pavQuizzesInARowCorrect < 2) {
-		return block.pavTermination;
+	} else if (values.pavBlockNum == parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2) {
+		return block.pitPhaseInstructions; // block.pavTermination; Participants may continue onto next phase, even if they have not passed the current phase.
 	}
 ]
 </block>
 
 
-
+// code for train only incorrect
 		if (values.pavBlockNum < 2) {
 		return block.pavBlock;
 	} else if (values.pavBlockNum >= 2 && values.pavBlockNum < 8 && values.pavQuizzesInARowCorrect < 2 && values.pavBlockQuizNumCorrect == 0){ // no quizzes correct, redo entire block again
@@ -2279,8 +2269,8 @@ PIT Phase
 </trial>
 
 <list pitTrialType>
-/ items = (1,2,3,4,5,6,7)
-/ poolsize = 210
+/ items = (1,2,3,4,5,6) // removed the no cue trial type in PIT phase
+/ poolsize = 180 // 210
 / replace = false
 / selectionrate = always
 </list>
@@ -2332,12 +2322,6 @@ PIT Phase
 		values.chooseFractalStimuli = values.pavOnlyFractal;
 		values.pitCueAssociatedButton = "safety";
 		trial.pitTrial.insertstimulustime(picture.fractalStimuli, 0);
-	} else {
-		values.noPavCueTrialNum = values.noPavCueTrialNum + 1;
-		values.pitTrialType = "no cue";
-		values.chooseSocialStimuli = "";
-		values.chooseFractalStimuli = "";
-		values.pitCueAssociatedButton = "safety";
 	}
 ]
 / stimulustimes = [0 = controlPanel, leverBothUpright, portETtrialID; 1 = portETdisplayOn; 1498 = portETdisplayOff; 1499 = portETtrialEnd] 
@@ -2377,7 +2361,7 @@ PIT Phase
 <list pitProbRichOption> // rich option has 70% probability of preventing the aversive outcome
 / items = (0, -1) 
 / itemprobabilities = (0.7, 0.3)
-/ poolsize = 210
+/ poolsize = 180 // 210
 / selectionmode = random
 / replace = true
 / selectionrate = always
@@ -2386,7 +2370,7 @@ PIT Phase
 <list pitProbPoorOption> // poor option has 30% probability of preventing the aversive outcome
 / items = (-1, 0) 
 / itemprobabilities = (0.7, 0.3)
-/ poolsize = 210
+/ poolsize = 180 //210
 / selectionmode = random
 / replace = true
 / selectionrate = always
@@ -2496,11 +2480,9 @@ PIT Phase
 	values.leftFractalTrialNum = 0; 	// 4
 	values.safeSocialTrialNum = 0; 		// 5
 	values.safeFractalTrialNum = 0; 	// 6
-	values.noPavCueTrialNum = 0;		// 7
 	
 	values.socialXPos = 50%;
 	values.fractalXPos = 50%;
-	
 ]
 / trials = [	
 	1 = sendPITBlockBeginPhysio;
@@ -2511,9 +2493,8 @@ PIT Phase
 / datastreams = (eyetracker)
 </block>
 
-
-2-211 = pitITIStart;
-	212 = PITend;
+2-181 = pitITIStart; //2-211 = pitITIStart; we removed the no cue condition
+182 = PITend; // 212 = PITend;
 
 
 
