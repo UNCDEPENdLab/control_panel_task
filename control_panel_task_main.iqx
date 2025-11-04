@@ -28,7 +28,7 @@ Initializing the parameters
 **************************************************************************************************************
 // Parameters to be fixed before the experiment
 <parameters>
-/ lastScriptUpdated = "11/02/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
+/ lastScriptUpdated = "11/03/2025"  // NEEDS TO BE UPDATED EVERYTIME SCRIPT IS MODIFIED 
 									// Indicates the date that the Inquisit script was updated, which was used to collect the participant's data
 / includePhysio = 0					// Set this to 1 if physio data needs to be recorded
 / includeEyetracker = 0				// Set this to 1 if eye-tracking data needs to be recorded
@@ -219,7 +219,7 @@ values.choiceSideButton, values.otherSideChoiceButton, values.previousResponseKe
 values.socialXPos, values.fractalXPos,
 values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3,
-trial.pavQuizSocial.response, values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerGiven, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz,
+trial.pavQuizSocial.response, values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerGiven, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz, values.pavQuizConfirmAnswer,
 values.pitTrialNum, values.pitTrialTypeNum, values.pitTrialType, values.rightSocialTrialNum, values.leftSocialTrialNum, values.rightFractalTrialNum, values.leftFractalTrialNum, 
 values.safeSocialTrialNum, values.safeFractalTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
 values.rightInstButtonRelatedHuman, values.leftInstButtonRelatedHuman, values.rightInstButtonRelatedFractal, values.leftInstButtonRelatedFractal, values.pavOnlyHuman
@@ -670,6 +670,7 @@ Please make sure that you can reach the speaker knob to change the volume.
 </block>
 
 
+
 **************************************************************************************************************
 Finding aversive sounds for the task
 **************************************************************************************************************
@@ -750,7 +751,6 @@ Finding aversive sounds for the task
 / ontrialbegin = [
 	values.chooseSound = list.chooseTestSound.nextvalue;
 	list.testSoundsSeq.appenditem(values.chooseSound);
-
 ]
 / showquestionnumbers = false
 / showpagenumbers = false
@@ -775,13 +775,38 @@ Finding aversive sounds for the task
 ]
 </surveypage>
 
+<text firstInstructions>
+/ items = ("Welcome to the Alarm Control Simulation!
+~n~nFirst you will hear a set of sounds.  Use the mouse to rate the level of aversiveness and arousal induced by each sound.")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, values.introTextYPos)
+/ size = (80%, 80%) // (values.introTextSize, 80%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+</text>
+
+<trial firstInstructions>
+/ ontrialbegin = [
+	values.trialStartTime = script.elapsedtime;
+]
+/ stimulustimes = [0 = firstInstructions, spaceBarContinueInstructions]
+/ beginresponsetime = 200
+/ correctresponse = (parameters.spaceButtonBox) 
+/ recorddata = true
+/ ontrialend = [
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+]
+</trial>
 
 <block soundsRating>
 / onblockbegin = [
 	values.phaseName = "soundRating";
 ]
 / trials = [
-	1-8 = soundsRating;
+	1 = firstInstructions;
+	2-9 = soundsRating;
 ]
 / onblockend = [
 	if (list.testSoundsAversivenessRating5.itemcount >= 3){ // choose these 3 to be the 3 sounds
@@ -860,8 +885,8 @@ Finding aversive sounds for the task
 Instructions for explanation of experiment
 **************************************************************************************************************
 <item introInstructions>
-/ 1 = "Welcome to the Alarm Control Simulation!
-~n~n~nYou are a technician responsible for monitoring and managing a highly sensitive alarm system in a secure facility."
+/ 1 = "Lets start the task...
+You are a technician responsible for monitoring and managing a highly sensitive alarm system in a secure facility."
 / 2 = "Your job is to minimize system malfunctions by responding to visual signals and colleague alerts that may indicate the potential activation of disruptive alarms (e.g., loud noises and visual alerts). 
 ~n~nStay focused!"
 </item>
@@ -1374,14 +1399,12 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 	if (values.chooseAversiveOutcome == values.instRightAversiveOutcome) {
 		if (trial.instruQuiz.response == parameters.rightButtonBox) {
 			values.instruQuizResponse = "correct";
-			values.thisBlockCorrectQuizzes = values.thisBlockCorrectQuizzes + 1;
 		} else if (trial.instruQuiz.response == parameters.leftButtonBox) {
 			values.instruQuizResponse = "incorrect";
 		}
 	} else if (values.chooseAversiveOutcome == values.instLeftAversiveOutcome) {
 		if (trial.instruQuiz.response == parameters.leftButtonBox) {
 			values.instruQuizResponse = "correct";
-			values.thisBlockCorrectQuizzes = values.thisBlockCorrectQuizzes + 1;
 		} else if (trial.instruQuiz.response == parameters.rightButtonBox) {
 			values.instruQuizResponse = "incorrect";
 		}
@@ -1397,12 +1420,6 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 / trialduration = 2
 / recorddata = false
 / screencapture = false
-/ ontrialend = [
-	if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes == 2) {
-		// Both quizzes are completed for this block and are correct
-		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
-	}
-]
 / branch = [
 	return trial.instruQuizConfirm;
 ]
@@ -1472,8 +1489,24 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 		}
 	}
 ]
+/ branch = [
+	return trial.instruQuizConfirmEnd;
+]
+
 </trial>
 
+<trial instruQuizConfirmEnd>
+/ stimulustimes = [0 = portETdisplayOff; 1 = portETtrialEnd]
+/ trialduration = 2
+/ recorddata = false
+/ screencapture = false
+/ ontrialend = [
+	if (values.instruQuizTrialNum == 2 && values.thisBlockCorrectQuizzes == 2) {
+		// Both quizzes are completed for this block and are correct
+		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
+	}
+]
+</trial>
 
 
 // changing number of instrumental trials from 50 to 40 trials based on discussion with Michael
@@ -1484,8 +1517,14 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 ]
 / trials = [
 	1 = sendInstruBlockBeginPhysio;
-	2-10 = instruITI_start;
-	11-12 = instruQuiz;
+	2-6 = instruITI_start;
+	7-8 = instruQuiz;
+]
+/ onblockend = [
+	values.previousResponseKeyPressed = "";
+	values.confirmedOrChangedQuizAnswer = "";
+	values.choiceSideButton = "";
+	values.otherSideChoiceButton = "";
 ]
 / screencapture = true
 / datastreams = (eyetracker)
@@ -1599,6 +1638,11 @@ The combination of human and fractal will be randomized and the location (right 
 	values.phaseName = "pavInstructions";
 	values.pavInstructionIndex = 0;
 	values.pavSetupTrialsCounter = 0;
+	values.instruQuizResponse = "";
+	values.thisBlockCorrectQuizzes = "";
+	values.numBlockQuizzesPassedTotal = "";
+	values.responseKeyPressed = "";
+	values.currentOutcome = "";
 ]
 / trials = [
 	1-4 = pavInstructions;
@@ -1960,7 +2004,7 @@ Pavlovian phase:
 <picture border>
 / items = ("stimuli/misc/border.png")
 / position = (values.borderXLoc, values.pavQuizYPos)
-/ size = (50%, 100%)
+/ size = (22%, 32%)
 / erase = false
 </picture>
 
@@ -1992,7 +2036,7 @@ Pavlovian phase:
 		trial.pavQuizSocialConfirm.insertstimulustime(picture.alarmTurnedOff, 0)
 	}
 ]
-/ stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionSocialConfirm, border, pavQuizBackPanel, socialStimuli1, socialStimuli2, socialStimuli3, portETtrialID; 1 = portETdisplayOn]
+/ stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionSocialConfirm, pavQuizBackPanel, socialStimuli1, socialStimuli2, socialStimuli3, border, portETtrialID; 1 = portETdisplayOn]
 / recorddata = true
 / inputdevice = mouse
 / screencapture = true
@@ -2006,13 +2050,13 @@ Pavlovian phase:
 		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
 	}
 
-	if (trial.pavQuizSocial.response == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
+	if (trial.pavQuizSocialConfirm.response == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
 		values.pavQuizAnswerGiven = 1;
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizSocial.response == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
+	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
 		values.pavQuizAnswerGiven = 2;
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizSocial.response == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
+	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
 		values.pavQuizAnswerGiven = 3;
 		values.pavQuizIsCorrect = 1;
 	} else {
@@ -2023,11 +2067,11 @@ Pavlovian phase:
 		values.numPavBlockCorrectQuiz += 1;
 	};
 	
-	if (trial.pavQuizSocial.response == "socialStimuli1"){
+	if (trial.pavQuizSocialConfirm.response == "socialStimuli1"){
 		values.pavQuizResponse = 1;
-	} else if (trial.pavQuizSocial.response == "socialStimuli2"){
+	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli2"){
 		values.pavQuizResponse = 2;
-	} else if (trial.pavQuizSocial.response == "socialStimuli3"){
+	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli3"){
 		values.pavQuizResponse = 3;
 	}
 	
@@ -2040,7 +2084,7 @@ Pavlovian phase:
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
 	
-	trial.pavQuizSocial.resetstimulusframes();
+	trial.pavQuizSocialConfirm.resetstimulusframes();
 ]
 / branch = [
 	return trial.pavQuizEnd;
@@ -2184,6 +2228,16 @@ Pavlovian phase:
 <trial pavQuizFractalConfirm>
 / ontrialbegin = [
 	values.trialStartTime = script.elapsedtime;
+	
+	if (trial.pavQuizFractal.response == "fractalStimuli1"){
+		values.borderXLoc = values.fractalXPos1;
+	} else if (trial.pavQuizFractal.response == "fractalStimuli2"){
+		values.borderXLoc = values.fractalXPos2;
+	} else if (trial.pavQuizFractal.response == "fractalStimuli3"){
+		values.borderXLoc = values.fractalXPos3;
+	} else {
+		values.borderXLoc = 0%;
+	}
 
 	if (values.pavQuizOutcomeType == "leftInstru"){
 		trial.pavQuizFractalConfirm.insertstimulustime(picture.aversiveOutcomeStimuli, 0)
@@ -2195,7 +2249,7 @@ Pavlovian phase:
 		trial.pavQuizFractalConfirm.insertstimulustime(picture.alarmTurnedOff, 0)
 	}
 ]
-/ stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionFractalConfirm, border, pavQuizBackPanel, fractalStimuli1, fractalStimuli2, fractalStimuli3, portETtrialID; 1 = portETdisplayOn]
+/ stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionFractalConfirm, pavQuizBackPanel, fractalStimuli1, fractalStimuli2, fractalStimuli3, border, portETtrialID; 1 = portETdisplayOn]
 / recorddata = true
 / screencapture = true
 / inputdevice = mouse
@@ -2209,13 +2263,13 @@ Pavlovian phase:
 		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
 	}
 
-	if (trial.pavQuizFractal.response == "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
+	if (trial.pavQuizFractalConfirm.response == "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
 		values.pavQuizAnswerGiven = 1;
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
+	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
 		values.pavQuizAnswerGiven = 2;
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
+	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
 		values.pavQuizAnswerGiven = 3;
 		values.pavQuizIsCorrect = 1;
 	} else {
@@ -2226,18 +2280,24 @@ Pavlovian phase:
 		values.numPavBlockCorrectQuiz += 1;
 	};
 	
-	if (trial.pavQuizFractal.response == "fractalStimuli1"){
+	if (trial.pavQuizFractalConfirm.response == "fractalStimuli1"){
 		values.pavQuizResponse = 1;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli2"){
+	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli2"){
 		values.pavQuizResponse = 2;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli3"){
+	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli3"){
 		values.pavQuizResponse = 3;
 	}
+	
+	if (values.pavQuizIsCorrect == values.pavQuizFirstAnswerCorrect){
+		values.pavQuizConfirmAnswer = "same";
+	} else {
+		values.pavQuizConfirmAnswer = "different";
+	}	
 
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
 
-	trial.pavQuizFractal.resetstimulusframes();
+	trial.pavQuizFractalConfirm.resetstimulusframes();
 ]
 / branch = [
 	return trial.pavQuizEnd;

@@ -27,8 +27,8 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="1.0813153"
-     inkscape:cx="350.03665"
-     inkscape:cy="333.39026"
+     inkscape:cx="350.03666"
+     inkscape:cy="166.92633"
      inkscape:window-width="1920"
      inkscape:window-height="1009"
      inkscape:window-x="-8"
@@ -45,7 +45,10 @@
        width="59.703522"
        height="77.320961"
        x="71.937851"
-       y="2.2021785" /></g><g
+       y="2.2021785"
+       inkscape:export-filename="border.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" /></g><g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1" /></svg>
