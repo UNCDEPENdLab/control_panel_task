@@ -214,7 +214,9 @@ trialcode, values.instruBlockNum, values.instruTrialNum, values.chooseAversiveOu
 values.chooseSound, values.soundAversivenessRating, values.soundArousalRating,
 values.sound3rdAversive, values.leftButtonAversiveSound, values.rightButtonAversiveSound,
 values.instRightAversiveOutcome, values.instLeftAversiveOutcome, values.noInstResponseOutcome, values.richInstOption, values.poorInstOption, values.currentOutcomeLeft, values.currentOutcomeRight,
-trial.instruQuiz.response, values.responseKeyPressed, values.currentOutcome, values.socialXPos, values.fractalXPos,
+trial.instruQuiz.response, values.responseKeyPressed, values.currentOutcome, 
+values.choiceSideButton, values.otherSideChoiceButton, values.previousResponseKeyPressed, values.confirmedOrChangedQuizAnswer, 
+values.socialXPos, values.fractalXPos,
 values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3,
 trial.pavQuizSocial.response, values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerGiven, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz,
@@ -1324,6 +1326,7 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 
 <trial instruQuiz>
 / ontrialbegin = [
+	values.confirmedOrChangedQuizAnswer = "";
 	values.trialStartTime = trial.instruQuiz.timestamp;
 	values.markerETtrialID = 201;
 	values.markerETtrialID = concat(values.markerETtrialID, format("%02d", values.instruTrialNum));
@@ -1347,11 +1350,15 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 / isvalidresponse = [
 	if (trial.instruQuiz.response == parameters.leftButtonBox) {
 		values.responseKeyPressed = "left";
+		values.choiceSideButton = "'L'";
+		values.otherSideChoiceButton = "'R'";
 		values.RTFromScriptStart = script.elapsedtime;
 		values.RTfromTrialStart = trial.instruQuiz.elapsedtime;
 		true;
 	} else if (trial.instruQuiz.response == parameters.rightButtonBox) {
 		values.responseKeyPressed = "right";
+		values.choiceSideButton = "'R'";
+		values.otherSideChoiceButton = "'L'";
 		values.RTFromScriptStart = script.elapsedtime;
 		values.RTfromTrialStart = trial.instruQuiz.elapsedtime;	
 		true;
@@ -1396,7 +1403,77 @@ if (trial.instruResponse.response == parameters.leftButtonBox) {
 		values.numBlockQuizzesPassedTotal = values.numBlockQuizzesPassedTotal + 1;
 	}
 ]
+/ branch = [
+	return trial.instruQuizConfirm;
+]
 </trial>
+
+<values>
+/ choiceSideButton = "" // 'L' or 'R'
+/ otherSideChoiceButton = ""
+/ previousResponseKeyPressed = ""
+/ confirmedOrChangedQuizAnswer = ""
+</values>
+
+<text instruQuizConfirmQuestion>
+/ items = ("Did you choose the <%values.choiceSideButton%> button? 
+~n~nYou can press the <%values.choiceSideButton%> button again to confirm your answer 
+~nor change your answer by pressing the <%values.otherSideChoiceButton%> button.")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 30%)
+/ size = (80%, 5%)
+</text>
+
+<trial instruQuizConfirm>
+/ ontrialbegin = [
+	values.previousResponseKeyPressed = values.responseKeyPressed;
+]
+/ stimulustimes = [0 = clearscreen, aversiveOutcomeStimuli, instruQuizConfirmQuestion, portETtrialID; 1 = portETdisplayOn]
+/ validresponse = (parameters.leftButtonBox, parameters.rightButtonBox)
+/ isvalidresponse = [
+	if (trial.instruQuizConfirm.response == parameters.leftButtonBox) {
+		values.responseKeyPressed = "left";
+		values.RTFromScriptStart = script.elapsedtime;
+		values.RTfromTrialStart = trial.instruQuizConfirm.elapsedtime;
+		true;
+	} else if (trial.instruQuizConfirm.response == parameters.rightButtonBox) {
+		values.responseKeyPressed = "right";
+		values.RTFromScriptStart = script.elapsedtime;
+		values.RTfromTrialStart = trial.instruQuizConfirm.elapsedtime;
+		true;
+	} else {
+	}
+]
+/ recorddata = true
+/ screencapture = true
+/ responseinterrupt = immediate
+/ ontrialend = [
+	if (values.responseKeyPressed == values.previousResponseKeyPressed){
+		values.confirmedOrChangedQuizAnswer = "sameResponse";
+	} else {
+		values.confirmedOrChangedQuizAnswer = "differentResponse";
+	}
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+	
+	if (values.chooseAversiveOutcome == values.instRightAversiveOutcome) {
+		if (trial.instruQuizConfirm.response == parameters.rightButtonBox) {
+			values.instruQuizResponse = "correct";
+			values.thisBlockCorrectQuizzes = values.thisBlockCorrectQuizzes + 1;
+		} else if (trial.instruQuizConfirm.response == parameters.leftButtonBox) {
+			values.instruQuizResponse = "incorrect";
+		}
+	} else if (values.chooseAversiveOutcome == values.instLeftAversiveOutcome) {
+		if (trial.instruQuizConfirm.response == parameters.leftButtonBox) {
+			values.instruQuizResponse = "correct";
+			values.thisBlockCorrectQuizzes = values.thisBlockCorrectQuizzes + 1;
+		} else if (trial.instruQuizConfirm.response == parameters.rightButtonBox) {
+			values.instruQuizResponse = "incorrect";
+		}
+	}
+]
+</trial>
+
 
 
 // changing number of instrumental trials from 50 to 40 trials based on discussion with Michael
@@ -1592,7 +1669,7 @@ Pavlovian phase:
 <trial pavITI>
 / ontrialbegin = [
 	values.chooseAversiveOutcome = "";
-	values.pavTrialNum += 1;
+	values.pavTrialNum = values.pavTrialNum + 1;
 	values.chooseSound = "";
 	// select which of the three sets to show: right/left instru option related or pav only neutral stimuli
 	// 8 out of 10 trials for one set of cues + outcome will be aversive for right/left instru option related
@@ -1828,9 +1905,94 @@ Pavlovian phase:
 	} else if (values.pavQuizOutcomeType == "safe"){
 		trial.pavQuizSocial.insertstimulustime(picture.alarmTurnedOff, 0)
 	}
-	
 ]
 / stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionSocial, pavQuizBackPanel, socialStimuli1, socialStimuli2, socialStimuli3, portETtrialID; 1 = portETdisplayOn]
+/ recorddata = true
+/ inputdevice = mouse
+/ screencapture = true
+/ validresponse = (picture.socialStimuli1, picture.socialStimuli2, picture.socialStimuli3)
+/ ontrialend = [
+	if (values.pavQuizOutcomeType == "leftInstru"){
+		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedFractal;
+	} else if (values.pavQuizOutcomeType == "rightInstru"){
+		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedFractal;
+	} else if (values.pavQuizOutcomeType == "safe"){
+		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
+	}
+
+	if (trial.pavQuizSocial.response == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
+		values.pavQuizAnswerGiven = 1;
+		values.pavQuizIsCorrect = 1;
+	} else if (trial.pavQuizSocial.response == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
+		values.pavQuizAnswerGiven = 2;
+		values.pavQuizIsCorrect = 1;
+	} else if (trial.pavQuizSocial.response == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
+		values.pavQuizAnswerGiven = 3;
+		values.pavQuizIsCorrect = 1;
+	} else {
+		values.pavQuizIsCorrect = 0;
+	};
+	
+	if (trial.pavQuizSocial.response == "socialStimuli1"){
+		values.pavQuizResponse = 1;
+	} else if (trial.pavQuizSocial.response == "socialStimuli2"){
+		values.pavQuizResponse = 2;
+	} else if (trial.pavQuizSocial.response == "socialStimuli3"){
+		values.pavQuizResponse = 3;
+	}
+	
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+	
+	trial.pavQuizSocial.resetstimulusframes();
+]
+/ branch = [
+	return trial.pavQuizSocialConfirm;
+]
+</trial>
+
+<values>
+/ borderXLoc = 0%
+/ pavQuizConfirmAnswer = ""
+/ pavQuizFirstAnswerCorrect = ""
+</values>
+
+<picture border>
+/ items = ("stimuli/misc/border.png")
+/ position = (values.borderXLoc, values.pavQuizYPos)
+/ size = (50%, 100%)
+/ erase = false
+</picture>
+
+<trial pavQuizSocialConfirm>
+/ ontrialbegin = [
+	values.trialStartTime = script.elapsedtime;
+	values.pavQuizFirstAnswerCorrect = values.pavQuizIsCorrect;
+	
+	if (trial.pavQuizSocial.response == "socialStimuli1"){
+		values.borderXLoc = values.socialXPos1;
+	} else if (trial.pavQuizSocial.response == "socialStimuli2"){
+		values.borderXLoc = values.socialXPos2;
+	} else if (trial.pavQuizSocial.response == "socialStimuli3"){
+		values.borderXLoc = values.socialXPos3;
+	} else {
+		values.borderXLoc = 0%;
+	}
+	if (values.pavQuizOutcomeType == "leftInstru"){
+		values.chooseAversiveOutcome = values.instLeftAversiveOutcome;
+		values.chooseSound = values.leftButtonAversiveSound;
+		trial.pavQuizSocialConfirm.insertstimulustime(picture.aversiveOutcomeStimuli, 0)
+		trial.pavQuizSocialConfirm.insertstimulustime(sound.allTestSounds, 0)
+	} else if (values.pavQuizOutcomeType == "rightInstru"){
+		values.chooseAversiveOutcome = values.instRightAversiveOutcome;
+		values.chooseSound = values.rightButtonAversiveSound;
+		trial.pavQuizSocialConfirm.insertstimulustime(picture.aversiveOutcomeStimuli, 0)
+		trial.pavQuizSocialConfirm.insertstimulustime(sound.allTestSounds, 0)
+	} else if (values.pavQuizOutcomeType == "safe"){
+		trial.pavQuizSocialConfirm.insertstimulustime(picture.alarmTurnedOff, 0)
+	}
+]
+/ stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionSocialConfirm, border, pavQuizBackPanel, socialStimuli1, socialStimuli2, socialStimuli3, portETtrialID; 1 = portETdisplayOn]
 / recorddata = true
 / inputdevice = mouse
 / screencapture = true
@@ -1869,6 +2031,12 @@ Pavlovian phase:
 		values.pavQuizResponse = 3;
 	}
 	
+	if (values.pavQuizIsCorrect == values.pavQuizFirstAnswerCorrect){
+		values.pavQuizConfirmAnswer = "same";
+	} else {
+		values.pavQuizConfirmAnswer = "different";
+	}
+	
 	values.trialEndTime = script.elapsedtime;
 	values.trialDur = values.trialEndTime - values.trialStartTime;
 	
@@ -1897,8 +2065,30 @@ Pavlovian phase:
 / halign = center
 </text>
 
+<text pavQuizQuestionSocialConfirm>
+/ items = ("Is this coworker alert you chose? Press on the picture again to confirm.
+~nYou may choose a different coworker alert if this is incorrect.")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 20%)
+/ size = (80%, 80%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+</text>
+
 <text pavQuizQuestionFractal>
 / items = ("Which sensor alert was associated with this outcome?")
+/ fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
+/ position = (50%, 20%)
+/ size = (80%, 80%)
+/ vjustify = center
+/ valign = center
+/ halign = center
+</text>
+
+<text pavQuizQuestionFractalConfirm>
+/ items = ("Is this sensor alert you chose? Press on the picture again to confirm.
+~nYou may choose a different sensor alert if this is incorrect.")
 / fontstyle = ("Arial", 4%, false, false, false, false, 5, 1)
 / position = (50%, 20%)
 / size = (80%, 80%)
@@ -1942,6 +2132,70 @@ Pavlovian phase:
 	}
 ]
 / stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionFractal, pavQuizBackPanel, fractalStimuli1, fractalStimuli2, fractalStimuli3, portETtrialID; 1 = portETdisplayOn]
+/ recorddata = true
+/ screencapture = true
+/ inputdevice = mouse
+/ validresponse = (picture.fractalStimuli1, picture.fractalStimuli2, picture.fractalStimuli3)
+/ ontrialend = [
+	if (values.pavQuizOutcomeType == "leftInstru"){
+		values.pavQuizCorrectAnswer = values.leftInstButtonRelatedFractal;
+	} else if (values.pavQuizOutcomeType == "rightInstru"){
+		values.pavQuizCorrectAnswer = values.rightInstButtonRelatedFractal;
+	} else if (values.pavQuizOutcomeType == "safe"){
+		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
+	}
+
+	if (trial.pavQuizFractal.response == "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
+		values.pavQuizAnswerGiven = 1;
+		values.pavQuizIsCorrect = 1;
+	} else if (trial.pavQuizFractal.response == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
+		values.pavQuizAnswerGiven = 2;
+		values.pavQuizIsCorrect = 1;
+	} else if (trial.pavQuizFractal.response == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
+		values.pavQuizAnswerGiven = 3;
+		values.pavQuizIsCorrect = 1;
+	} else {
+		values.pavQuizIsCorrect = 0;
+	};
+	
+	if (values.pavQuizIsCorrect == 1) {
+		values.numPavBlockCorrectQuiz += 1;
+	};
+	
+	if (trial.pavQuizFractal.response == "fractalStimuli1"){
+		values.pavQuizResponse = 1;
+	} else if (trial.pavQuizFractal.response == "fractalStimuli2"){
+		values.pavQuizResponse = 2;
+	} else if (trial.pavQuizFractal.response == "fractalStimuli3"){
+		values.pavQuizResponse = 3;
+	}
+
+	values.trialEndTime = script.elapsedtime;
+	values.trialDur = values.trialEndTime - values.trialStartTime;
+
+	trial.pavQuizFractal.resetstimulusframes();
+]
+/ branch = [
+	return trial.pavQuizFractalConfirm;
+]
+</trial>
+
+
+<trial pavQuizFractalConfirm>
+/ ontrialbegin = [
+	values.trialStartTime = script.elapsedtime;
+
+	if (values.pavQuizOutcomeType == "leftInstru"){
+		trial.pavQuizFractalConfirm.insertstimulustime(picture.aversiveOutcomeStimuli, 0)
+		trial.pavQuizFractalConfirm.insertstimulustime(sound.allTestSounds, 0)
+	} else if (values.pavQuizOutcomeType == "rightInstru"){
+		trial.pavQuizFractalConfirm.insertstimulustime(picture.aversiveOutcomeStimuli, 0)
+		trial.pavQuizFractalConfirm.insertstimulustime(sound.allTestSounds, 0)
+	} else if (values.pavQuizOutcomeType == "safe"){
+		trial.pavQuizFractalConfirm.insertstimulustime(picture.alarmTurnedOff, 0)
+	}
+]
+/ stimulustimes = [0 = clearscreen, pavQuizPhysio, pavQuizQuestionFractalConfirm, border, pavQuizBackPanel, fractalStimuli1, fractalStimuli2, fractalStimuli3, portETtrialID; 1 = portETdisplayOn]
 / recorddata = true
 / screencapture = true
 / inputdevice = mouse
