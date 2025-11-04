@@ -60,13 +60,20 @@ Defining the sequence of blocks for the experiment
 **************************************************************************************************************
 <expt>
 / blocks = [
-	1 = experimentSetup;
+	1 = soundsRating; 
+	2 = introInstructions;			
+	3 = instPhaseInstructions;
+	4 = instBlock;
+]
+</expt>
+
+
+// dont use this
+1 = experimentSetup;
 	2 = soundsRating; 
 	3 = introInstructions;			
 	4 = instPhaseInstructions;
 	5 = instBlock;
-]
-</expt>
 
 **************************************************************************************************************
 Physio and eye-tracker software interaction - 
@@ -121,6 +128,7 @@ Values which will be updated during the trials
 / richInstOption = 0
 / poorInstOption = 0
 / numSoundRepeated = 0
+/ pavQuizAnswerStimuli = ""
 / instruBlockNum = 0
 / pavBlockNum = 0
 / aversiveOutcomeXPos = 50%
@@ -149,7 +157,6 @@ Values which will be updated during the trials
 / typeOfAlert = ""
 / pavQuizOutcomeType = ""
 / pavQuizCorrectAnswer = ""
-/ pavQuizAnswerGiven = ""
 / pavQuizIsCorrect = ""
 / pitITIDur = ""
 / pitTrialNum = ""
@@ -219,7 +226,7 @@ values.choiceSideButton, values.otherSideChoiceButton, values.previousResponseKe
 values.socialXPos, values.fractalXPos,
 values.instruQuizTrialNum, values.instruQuizResponse, values.thisBlockCorrectQuizzes, values.numBlockQuizzesPassedTotal, 
 values.typeOfAlert, values.socialXPos1, values.socialXPos2, values.socialXPos3, values.fractalXPos1, values.fractalXPos2, values.fractalXPos3, values.pavITIDur,
-trial.pavQuizSocial.response, values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerGiven, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz, values.pavQuizConfirmAnswer,
+values.pavQuizResponse, values.pavQuizOutcomeType, values.pavQuizCorrectAnswer, values.pavQuizAnswerStimuli, values.pavQuizIsCorrect, values.numPavBlockCorrectQuiz, values.pavQuizConfirmAnswer,
 values.pitTrialNum, values.pitTrialTypeNum, values.pitTrialType, values.rightSocialTrialNum, values.leftSocialTrialNum, values.rightFractalTrialNum, values.leftFractalTrialNum, 
 values.safeSocialTrialNum, values.safeFractalTrialNum, values.pitCueAssociatedButton, values.pitResponseSide, values.pitResponseRichOption,
 values.rightInstButtonRelatedHuman, values.leftInstButtonRelatedHuman, values.rightInstButtonRelatedFractal, values.leftInstButtonRelatedFractal, values.pavOnlyHuman
@@ -1941,6 +1948,7 @@ Pavlovian phase:
 
 <trial pavQuizSocial>
 / ontrialbegin = [
+	values.pavQuizConfirmAnswer = "";
 	values.pavITIDur = "";
 	values.trialStartTime = script.elapsedtime;
 	values.markerETtrialID = 202;
@@ -1986,26 +1994,25 @@ Pavlovian phase:
 	} else if (values.pavQuizOutcomeType == "safe"){
 		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
 	}
-
-	if (trial.pavQuizSocial.response == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
-		values.pavQuizAnswerGiven = 1;
+	values.pavQuizAnswerStimuli = trial.pavQuizSocial.response;
+	if (values.pavQuizAnswerStimuli == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizSocial.response == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
-		values.pavQuizAnswerGiven = 2;
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizSocial.response == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
-		values.pavQuizAnswerGiven = 3;
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
 		values.pavQuizIsCorrect = 1;
 	} else {
 		values.pavQuizIsCorrect = 0;
 	};
 	
-	if (trial.pavQuizSocial.response == "socialStimuli1"){
+	if (values.pavQuizAnswerStimuli == "socialStimuli1"){
 		values.pavQuizResponse = 1;
-	} else if (trial.pavQuizSocial.response == "socialStimuli2"){
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli2"){
 		values.pavQuizResponse = 2;
-	} else if (trial.pavQuizSocial.response == "socialStimuli3"){
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli3"){
 		values.pavQuizResponse = 3;
+	}else {
+		values.pavQuizResponse = 0;
 	}
 	
 	values.trialEndTime = script.elapsedtime;
@@ -2072,15 +2079,12 @@ Pavlovian phase:
 	} else if (values.pavQuizOutcomeType == "safe"){
 		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
 	}
-
-	if (trial.pavQuizSocialConfirm.response == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
-		values.pavQuizAnswerGiven = 1;
+	values.pavQuizAnswerStimuli = trial.pavQuizSocialConfirm.response;
+	if (values.pavQuizAnswerStimuli == "socialStimuli1" && values.pavQuizCorrectAnswer == 1) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
-		values.pavQuizAnswerGiven = 2;
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli2" && values.pavQuizCorrectAnswer == 2) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
-		values.pavQuizAnswerGiven = 3;
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli3" && values.pavQuizCorrectAnswer == 3) {
 		values.pavQuizIsCorrect = 1;
 	} else {
 		values.pavQuizIsCorrect = 0;
@@ -2090,12 +2094,14 @@ Pavlovian phase:
 		values.numPavBlockCorrectQuiz += 1;
 	};
 	
-	if (trial.pavQuizSocialConfirm.response == "socialStimuli1"){
+	if (values.pavQuizAnswerStimuli == "socialStimuli1"){
 		values.pavQuizResponse = 1;
-	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli2"){
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli2"){
 		values.pavQuizResponse = 2;
-	} else if (trial.pavQuizSocialConfirm.response == "socialStimuli3"){
+	} else if (values.pavQuizAnswerStimuli == "socialStimuli3"){
 		values.pavQuizResponse = 3;
+	} else {
+		values.pavQuizResponse = 0;
 	}
 	
 	if (values.pavQuizIsCorrect == values.pavQuizFirstAnswerCorrect){
@@ -2166,6 +2172,7 @@ Pavlovian phase:
 
 <trial pavQuizFractal>
 / ontrialbegin = [
+	values.pavQuizConfirmAnswer = "";
 	values.pavITIDur = "";
 	values.trialStartTime = script.elapsedtime;
 	values.markerETtrialID = 202;
@@ -2211,30 +2218,26 @@ Pavlovian phase:
 	} else if (values.pavQuizOutcomeType == "safe"){
 		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
 	}
+	values.pavQuizAnswerStimuli = trial.pavQuizFractal.response;
 
-	if (trial.pavQuizFractal.response == "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
-		values.pavQuizAnswerGiven = 1;
+	if (values.pavQuizAnswerStimuli== "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
-		values.pavQuizAnswerGiven = 2;
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
-		values.pavQuizAnswerGiven = 3;
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
 		values.pavQuizIsCorrect = 1;
 	} else {
 		values.pavQuizIsCorrect = 0;
 	};
 	
-	if (values.pavQuizIsCorrect == 1) {
-		values.numPavBlockCorrectQuiz += 1;
-	};
-	
-	if (trial.pavQuizFractal.response == "fractalStimuli1"){
+	if (values.pavQuizAnswerStimuli == "fractalStimuli1"){
 		values.pavQuizResponse = 1;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli2"){
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli2"){
 		values.pavQuizResponse = 2;
-	} else if (trial.pavQuizFractal.response == "fractalStimuli3"){
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli3"){
 		values.pavQuizResponse = 3;
+	} else {
+		values.pavQuizResponse = 0;
 	}
 
 	values.trialEndTime = script.elapsedtime;
@@ -2251,6 +2254,7 @@ Pavlovian phase:
 <trial pavQuizFractalConfirm>
 / ontrialbegin = [
 	values.trialStartTime = script.elapsedtime;
+	values.pavQuizFirstAnswerCorrect = values.pavQuizIsCorrect;
 	
 	if (trial.pavQuizFractal.response == "fractalStimuli1"){
 		values.borderXLoc = values.fractalXPos1;
@@ -2285,15 +2289,13 @@ Pavlovian phase:
 	} else if (values.pavQuizOutcomeType == "safe"){
 		values.pavQuizCorrectAnswer = values.pavOnlyFractal;
 	}
+	values.pavQuizAnswerStimuli = trial.pavQuizFractalConfirm.response;
 
-	if (trial.pavQuizFractalConfirm.response == "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
-		values.pavQuizAnswerGiven = 1;
+	if (values.pavQuizAnswerStimuli == "fractalStimuli1" && values.pavQuizCorrectAnswer == 1) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
-		values.pavQuizAnswerGiven = 2;
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli2" && values.pavQuizCorrectAnswer == 2) {
 		values.pavQuizIsCorrect = 1;
-	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
-		values.pavQuizAnswerGiven = 3;
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli3" && values.pavQuizCorrectAnswer == 3) {
 		values.pavQuizIsCorrect = 1;
 	} else {
 		values.pavQuizIsCorrect = 0;
@@ -2303,12 +2305,14 @@ Pavlovian phase:
 		values.numPavBlockCorrectQuiz += 1;
 	};
 	
-	if (trial.pavQuizFractalConfirm.response == "fractalStimuli1"){
+	if (values.pavQuizAnswerStimuli == "fractalStimuli1"){
 		values.pavQuizResponse = 1;
-	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli2"){
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli2"){
 		values.pavQuizResponse = 2;
-	} else if (trial.pavQuizFractalConfirm.response == "fractalStimuli3"){
+	} else if (values.pavQuizAnswerStimuli == "fractalStimuli3"){
 		values.pavQuizResponse = 3;
+	} else {
+		values.pavQuizResponse = 0;
 	}
 	
 	if (values.pavQuizIsCorrect == values.pavQuizFirstAnswerCorrect){
@@ -2346,6 +2350,11 @@ Pavlovian phase:
 / onblockbegin = [
 	values.phaseName = "pavBlock";
 	values.pavBlockNum = values.pavBlockNum + 1;
+	values.pavQuizConfirmAnswer = "";
+	values.pavQuizIsCorrect = "";
+	values.numPavBlockCorrectQuiz = 0;
+	values.pavQuizCorrectAnswer = "";
+	values.pavQuizOutcomeType = "";
 ]
 / trials = [
 	1 = sendPavBlockBeginPhysio;
@@ -2355,7 +2364,7 @@ Pavlovian phase:
 / screencapture = true
 / datastreams = (eyetracker)
 / onblockend = [
-	if (values.pavBlockQuizNumCorrect == 6){ // all quizzes in this block are correct
+	if (values.numPavBlockCorrectQuiz >= 5){ // all quizzes in this block are correct // changing pav block quiz correct criteria from all 6 to atleast 5
 		values.pavBlockQuizNumCorrect = values.pavBlockQuizNumCorrect + 1;
 	}
 	values.aversiveOutcomeYPos = 50%;
@@ -2370,6 +2379,8 @@ Pavlovian phase:
 		return block.pitPhaseInstructions;
 	} else if (values.pavBlockNum == parameters.maxNumBlocksPav && values.pavBlockQuizNumCorrect < 2) {
 		return block.pitPhaseInstructions; // block.pavTermination; Participants may continue onto next phase, even if they have not passed the current phase.
+	} else {
+		return block.pavTermination; // should NEVER go into this loop
 	}
 ]
 </block>
@@ -2464,6 +2475,12 @@ PIT phase instructions
 
 <block pitPhaseInstructions>
 / onblockbegin = [
+	values.pavQuizConfirmAnswer = "";
+	values.pavQuizIsCorrect = "";
+	values.numPavBlockCorrectQuiz = "";
+	values.pavQuizCorrectAnswer = "";
+	values.pavQuizOutcomeType = "";
+	
 	values.phaseName = "pitInstructions";
 	values.pavInstructionIndex = 0;
 	values.pavSetupTrialsCounter = 0;
